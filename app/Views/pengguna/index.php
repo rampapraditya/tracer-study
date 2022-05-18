@@ -18,7 +18,7 @@
         save_method = 'add';
         $('#form')[0].reset();
         $('#modal_form').modal('show');
-        $('.modal-title').text('Tambah pengguna');
+        $('.modal-title').text('Tambah personil');
         $('[name="nrp"]').attr("readonly", false);
     }
 
@@ -28,7 +28,8 @@
         var pass = document.getElementById('pass').value;
         var nama = document.getElementById('nama').value;
         var role = document.getElementById('role').value;
-        var kapal = document.getElementById('kapal').value;
+        var korps = document.getElementById('korps').value;
+        var pangkat = document.getElementById('pangkat').value;
         
         if (nrp === "") {
             alert("NRP tidak boleh kosong");
@@ -38,6 +39,10 @@
             alert("Nama tidak boleh kosong");
         }else if(role === "-"){
             alert("Pilih role terlebih dahulu");
+        }else if(korps === "-"){
+            alert("Pilih korps terlebih dahulu");
+        }else if(pangkat === "-"){
+            alert("Pilih pangkat terlebih dahulu");
         } else {
             $('#btnSave').text('Saving...');
             $('#btnSave').attr('disabled', true);
@@ -55,7 +60,8 @@
             form_data.append('nama', nama);
             form_data.append('role', role);
             form_data.append('pass', pass);
-            form_data.append('kapal', kapal);
+            form_data.append('korps', korps);
+            form_data.append('pangkat', pangkat);
             
             // ajax adding data to database
             $.ajax({
@@ -103,21 +109,20 @@
         save_method = 'update';
         $('#form')[0].reset();
         $('#modal_form').modal('show');
-        $('.modal-title').text('Ganti pengguna');
+        $('.modal-title').text('Ganti personil');
         $('[name="nrp"]').attr("readonly", true);
         $.ajax({
             url: "<?php echo base_url(); ?>/pengguna/ganti/" + id,
             type: "POST",
             dataType: "JSON",
             success: function (data) {
-                $('[name="kode"]').val(data.idusers);
+                $('[name="kode"]').val(data.kode);
                 $('[name="nama"]').val(data.nama);
                 $('[name="nrp"]').val(data.nrp);
                 $('[name="pass"]').val(data.pass);
                 $('[name="role"]').val(data.idrole);
                 $('[name="korps"]').val(data.idkorps);
                 $('[name="pangkat"]').val(data.idpangkat);
-                $('[name="kapal"]').val(data.idkapal);
             }, error: function (jqXHR, textStatus, errorThrown) {
                 alert('Error get data');
             }
@@ -135,7 +140,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">MASTER PENGGUNA</h4>
-                    <p class="card-description">Maintenance data kapal</p>
+                    <p class="card-description">Maintenance data personil</p>
                     <button type="button" class="btn btn-primary" onclick="add();">Tambah</button>
                     <button type="button" class="btn btn-secondary" onclick="reload();">Reload</button>
                 </div>
@@ -147,8 +152,9 @@
                                     <th>NRP</th>
                                     <th>ROLE</th>
                                     <th>NAMA</th>
-                                    <th>KRI</th>
-                                    <th style="text-align: center;">Aksi</th>
+                                    <th>KORPS</th>
+                                    <th>PANGKAT</th>
+                                    <th style="text-align: center;">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -199,13 +205,26 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>KRI</label>
-                        <select class="form-control" id="kapal" name="kapal">
-                            <option value="-">- Pilih KRI -</option>
+                        <label>KORPS</label>
+                        <select class="form-control" id="korps" name="korps">
+                            <option value="-">- PILIH KORPS -</option>
                             <?php
-                            foreach ($kapal->getResult() as $row) {
+                            foreach ($korps->getResult() as $row) {
                                 ?>
-                            <option value="<?php echo $row->idkapal; ?>"><?php echo $row->nama_kapal; ?></option>
+                            <option value="<?php echo $row->idkorps; ?>"><?php echo $row->nama_korps; ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>PANGKAT</label>
+                        <select class="form-control" id="pangkat" name="pangkat">
+                            <option value="-">- PILIH PANGKAT -</option>
+                            <?php
+                            foreach ($pangkat->getResult() as $row) {
+                                ?>
+                            <option value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
                                 <?php
                             }
                             ?>

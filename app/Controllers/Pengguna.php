@@ -48,7 +48,8 @@ class Pengguna extends BaseController{
             $data['logo'] = $def_logo;
             
             $data['role'] = $this->model->getAll("role");
-            $data['kapal'] = $this->model->getAll("kapal");
+            $data['korps'] = $this->model->getAll("korps");
+            $data['pangkat'] = $this->model->getAll("pangkat");
             
             echo view('head', $data);
             echo view('menu');
@@ -62,19 +63,18 @@ class Pengguna extends BaseController{
     public function ajaxlist() {
         if(session()->get("logged_in")){
             $data = array();
-            $list = $this->model->getAllQ("select a.idusers, a.nrp, b.nama_role, a.nama, a.idkapal from users a, role b where a.idrole = b.idrole;");
+            $list = $this->model->getAllQ("select a.idusers, a.nrp, b.nama_role, a.nama, c.nama_pangkat, d.nama_korps 
+                from users a, role b, pangkat c, korps d 
+                where a.idrole = b.idrole and a.idpangkat = c.idpangkat and a.idkorps = d.idkorps;");
             foreach ($list->getResult() as $row) {
                 $val = array();
                 $val[] = $row->nrp;
                 $val[] = $row->nama_role;
                 $val[] = $row->nama;
-                if(strlen($row->idkapal)){
-                    $val[] = $this->model->getAllQR("select nama_kapal from kapal where idkapal = '".$row->idkapal."';")->nama_kapal;
-                }else{
-                    $val[] = "";
-                }
-                
+                $val[] = $row->nama_pangkat;
+                $val[] = $row->nama_korps;
                 $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-success btn-fw" onclick="detil('."'".$row->idusers."'".')">Detil</button>&nbsp;'
                         . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="ganti('."'".$row->idusers."'".')">Ganti</button>&nbsp;'
                         . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus('."'".$row->idusers."'".','."'".$row->nrp."'".','."'".$row->nama."'".')">Hapus</button>'
                         . '</div>';
@@ -100,7 +100,8 @@ class Pengguna extends BaseController{
                     'pass' => $this->modul->enkrip_pass($this->request->getVar('pass')),
                     'nama' => $this->request->getVar('nama'),
                     'idrole' => $this->request->getVar('role'),
-                    'idkapal' => $this->request->getVar('kapal'),
+                    'idkorps' => $this->request->getVar('korps'),
+                    'idpangkat' => $this->request->getVar('pangkat')
                 );
                 $simpan = $this->model->add("users",$data);
                 if($simpan == 1){
@@ -126,7 +127,8 @@ class Pengguna extends BaseController{
                 "nama" => $data->nama,
                 "pass" => $this->modul->dekrip_pass($data->pass),
                 "idrole" => $data->idrole,
-                "idkapal" => $data->idkapal
+                "idkorps" => $data->idkorps,
+                "idpangkat" => $data->idpangkat
             ));
         }else{
             $this->modul->halaman('login');
@@ -139,7 +141,8 @@ class Pengguna extends BaseController{
                 'pass' => $this->modul->enkrip_pass($this->request->getVar('pass')),
                 'nama' => $this->request->getVar('nama'),
                 'idrole' => $this->request->getVar('role'),
-                'idkapal' => $this->request->getVar('kapal'),
+                'idkorps' => $this->request->getVar('korps'),
+                'idpangkat' => $this->request->getVar('pangkat')
             );
             $kond['idusers'] = $this->request->getVar('kode');
             $update = $this->model->update("users",$data, $kond);
