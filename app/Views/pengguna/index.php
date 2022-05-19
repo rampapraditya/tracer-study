@@ -132,6 +132,10 @@
     function closemodal(){
         $('#modal_form').modal('hide');
     }
+    
+    function detil(kode){
+        window.location.href = "<?php echo base_url(); ?>/pengguna/detil/" + kode;
+    }
 
 </script>
 <div class="content-wrapper">

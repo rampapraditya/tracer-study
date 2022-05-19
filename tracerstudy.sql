@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 18, 2022 at 12:12 PM
+-- Generation Time: May 19, 2022 at 07:35 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -20,6 +20,38 @@ SET time_zone = "+00:00";
 --
 -- Database: `tracerstudy`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `identitas`
+--
+
+DROP TABLE IF EXISTS `identitas`;
+CREATE TABLE IF NOT EXISTS `identitas` (
+  `kode` varchar(6) CHARACTER SET latin1 NOT NULL DEFAULT '0',
+  `instansi` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `slogan` varchar(100) CHARACTER SET latin1 DEFAULT NULL,
+  `tahun` float DEFAULT NULL,
+  `pimpinan` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  `alamat` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `kdpos` varchar(7) CHARACTER SET latin1 DEFAULT NULL,
+  `tlp` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
+  `fax` varchar(35) CHARACTER SET latin1 DEFAULT NULL,
+  `website` varchar(100) CHARACTER SET latin1 DEFAULT NULL,
+  `email` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  `logo` longtext CHARACTER SET latin1,
+  `lat` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `lon` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  PRIMARY KEY (`kode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `identitas`
+--
+
+INSERT INTO `identitas` (`kode`, `instansi`, `slogan`, `tahun`, `pimpinan`, `alamat`, `kdpos`, `tlp`, `fax`, `website`, `email`, `logo`, `lat`, `lon`) VALUES
+('K00001', 'TRACER STUDY', 'Ghora Wira Madya Jala', 1985, 'Laksamana Muda TNI Iwan Isnurwanto, M.A.P., M.Tr.(Han).', 'Dermaga Ujung Surabaya, Jawa Timur', '60178', '08', '-', 'https://koarmada2.tnial.mil.id/', 'rampa@gmail.com', 'tnial.png', '-7.4063726', '112.5841074');
 
 -- --------------------------------------------------------
 
@@ -119,6 +151,23 @@ INSERT INTO `pangkat` (`idpangkat`, `nama_pangkat`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `pendidikan`
+--
+
+DROP TABLE IF EXISTS `pendidikan`;
+CREATE TABLE IF NOT EXISTS `pendidikan` (
+  `idpendidikan` varchar(6) CHARACTER SET latin1 NOT NULL,
+  `idusers` varchar(20) NOT NULL,
+  `nm_pendidikan` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `tahun` varchar(4) CHARACTER SET latin1 DEFAULT NULL,
+  `keterangan` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  PRIMARY KEY (`idpendidikan`),
+  KEY `FK_pendidikan_users` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `role`
 --
 
@@ -134,7 +183,8 @@ CREATE TABLE IF NOT EXISTS `role` (
 --
 
 INSERT INTO `role` (`idrole`, `nama_role`) VALUES
-('R00001', 'ADMINISTRATOR');
+('R00001', 'ADMINISTRATOR'),
+('R00002', 'Staff');
 
 -- --------------------------------------------------------
 
@@ -165,17 +215,56 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `tgl_lahir`, `agama`, `kota_asal`, `foto`, `satuan_kerja`, `idrole`, `idkorps`, `idpangkat`) VALUES
-('U00001', 'ADMIN', 'aGtq', 'ADMIN', '1991-01-30', 'Islam', 'Surabaya', './assets/images/e7118256aaf4d1de09199e2b6cbe667c.png', 'TNI ANGKATAN LAUT', 'R00001', 'K00000', 'P00001');
+('U00001', 'ADMIN', 'aGtq', 'ADMIN', '1991-01-30', 'Islam', 'Surabaya', './assets/images/e7118256aaf4d1de09199e2b6cbe667c.png', 'TNI ANGKATAN LAUT', 'R00001', 'K00000', 'P00001'),
+('U00002', '111', 'aGtq', 'Rampa atika', NULL, NULL, NULL, NULL, NULL, 'R00002', 'K00001', 'P00013');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users_detil`
+--
+
+DROP TABLE IF EXISTS `users_detil`;
+CREATE TABLE IF NOT EXISTS `users_detil` (
+  `idusers_detil` varchar(6) CHARACTER SET latin1 NOT NULL,
+  `idusers` varchar(20) NOT NULL,
+  `ms_dinas_pngkt` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
+  `tmt_tni` date DEFAULT NULL,
+  `ms_dinas_prajurit` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
+  `tmp_lahir` varchar(10) CHARACTER SET latin1 DEFAULT NULL,
+  `tgl_lahir` date DEFAULT NULL,
+  `suku` varchar(10) CHARACTER SET latin1 DEFAULT NULL,
+  `jabatan` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  `lama_jabatan` varchar(15) CHARACTER SET latin1 DEFAULT NULL,
+  `alamat` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `tmt_fiktif` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `jkel` varchar(5) CHARACTER SET latin1 DEFAULT NULL,
+  `agama` varchar(10) CHARACTER SET latin1 DEFAULT NULL,
+  PRIMARY KEY (`idusers_detil`),
+  KEY `FK_users_detil_user` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Constraints for dumped tables
 --
 
 --
+-- Constraints for table `pendidikan`
+--
+ALTER TABLE `pendidikan`
+  ADD CONSTRAINT `FK_pendidikan_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `FK_users_role` FOREIGN KEY (`idrole`) REFERENCES `role` (`idrole`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `users_detil`
+--
+ALTER TABLE `users_detil`
+  ADD CONSTRAINT `FK_users_detil_user` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

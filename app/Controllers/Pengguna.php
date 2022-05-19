@@ -74,7 +74,7 @@ class Pengguna extends BaseController{
                 $val[] = $row->nama_pangkat;
                 $val[] = $row->nama_korps;
                 $val[] = '<div style="text-align: center;">'
-                        . '<button type="button" class="btn btn-outline-success btn-fw" onclick="detil('."'".$row->idusers."'".')">Detil</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-success btn-fw" onclick="detil('."'".$this->modul->enkrip_url($row->idusers)."'".')">Detil</button>&nbsp;'
                         . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="ganti('."'".$row->idusers."'".')">Ganti</button>&nbsp;'
                         . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus('."'".$row->idusers."'".','."'".$row->nrp."'".','."'".$row->nama."'".')">Hapus</button>'
                         . '</div>';
@@ -169,6 +169,43 @@ class Pengguna extends BaseController{
             echo json_encode(array("status" => $status));
         }else{
             $this->modul->halaman('login');
+        }
+    }
+    
+    public function detil() {
+        if(session()->get("logged_in")){
+            $data['username'] = session()->get("username");
+            $data['nrp'] = session()->get('nrp');
+            $data['nama'] = session()->get("nama");
+            $data['role'] = session()->get("role");
+            
+            // membaca foto profile
+            $def_foto = base_url().'/images/noimg.jpg';
+            $foto = $this->model->getAllQR("select foto from users where idusers = '".session()->get("username")."';")->foto;
+            if(strlen($foto) > 0){
+                if(file_exists(ROOTPATH.'public/uploads/'.$foto)){
+                    $def_foto = base_url().'/uploads/'.$foto;
+                }
+            }
+            $data['foto_profile'] = $def_foto;
+            
+            // membaca logo
+            $def_logo = base_url().'/images/noimg.jpg';
+            $logo = $this->model->getAllQR("select logo from identitas;")->logo;
+            if(strlen($logo) > 0){
+                if(file_exists(ROOTPATH.'public/uploads/'.$logo)){
+                    $def_logo = base_url().'/uploads/'.$logo;
+                }
+            }
+            $data['logo'] = $def_logo;
+            
+            
+            echo view('head', $data);
+            echo view('menu');
+            echo view('pengguna/detil');
+            echo view('foot');
+        }else{
+           $this->modul->halaman('login');
         }
     }
 }
