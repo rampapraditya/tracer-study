@@ -5,7 +5,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 namespace App\Libraries;
+
 /**
  * Description of Modul
  *
@@ -15,7 +17,7 @@ class Modul {
 
     public function pesan_halaman($pesan, $halaman) {
         $string_pesan = "<script type='text/javascript'> alert('" . $pesan . "');";
-        $string_pesan .= "window.location = '" . base_url() .'/'. $halaman . "';</script>";
+        $string_pesan .= "window.location = '" . base_url() . '/' . $halaman . "';</script>";
         echo $string_pesan;
     }
 
@@ -23,15 +25,15 @@ class Modul {
         $string_pesan = "<script type='text/javascript'> alert('" . $pesan . "');</script>";
         echo $string_pesan;
     }
-    
+
     public function pesanlog($pesan) {
-        $string_pesan = "<script type='text/javascript'> console.log('".$pesan."') ;</script>";
+        $string_pesan = "<script type='text/javascript'> console.log('" . $pesan . "') ;</script>";
         echo $string_pesan;
     }
 
     public function halaman($halaman) {
         $string_pesan = "<script type='text/javascript'> ";
-        $string_pesan .= "window.location = '" . base_url() .'/'. $halaman . "';</script>";
+        $string_pesan .= "window.location = '" . base_url() . '/' . $halaman . "';</script>";
         echo $string_pesan;
     }
 
@@ -39,7 +41,7 @@ class Modul {
         date_default_timezone_set("Asia/Jakarta");
         return date("H:i:s");
     }
-    
+
     public function WaktuSekarang2() {
         date_default_timezone_set("Asia/Jakarta");
         return date("H:i");
@@ -97,7 +99,7 @@ class Modul {
         date_add($date, date_interval_create_from_date_string('-' . $menit . ' minutes'));
         return date_format($date, 'H:i:s');
     }
-    
+
     public function kurang_bulan($tgl_awal, $tgl_akhir) {
         $d1 = new DateTime($tgl_awal);
         $d2 = new DateTime($tgl_akhir);
@@ -189,8 +191,8 @@ class Modul {
         }
         return $count_weeks;
     }
-    
-    public function get_nama_bulan($month_num){
+
+    public function get_nama_bulan($month_num) {
         $month_name = date("F", mktime(0, 0, 0, $month_num, 10));
         return $month_name;
     }
@@ -351,43 +353,43 @@ class Modul {
         $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
         return $output;
     }
-    
+
     public function merah($kata) {
-        return '<span class="badge badge-danger">'.$kata.'</span>';
+        return '<span class="badge badge-danger">' . $kata . '</span>';
     }
-    
+
     public function hijau($kata) {
-        return '<span class="badge badge-danger">'.$kata.'</span>';
+        return '<span class="badge badge-danger">' . $kata . '</span>';
     }
-    
+
     public function getFileName($path) {
         $file_name = pathinfo($path, PATHINFO_FILENAME);
         return $file_name;
     }
-    
+
     public function getFileExt($path) {
         $ext_file = pathinfo($path, PATHINFO_EXTENSION);
         return $ext_file;
     }
-    
+
     public function antixss($text) {
         return htmlentities($text, ENT_QUOTES, 'UTF-8');
     }
-    
+
     public function input_from_text_editor($data) {
         $data1 = trim($data);
         $data2 = stripslashes($data1);
         $data3 = htmlspecialchars($data2);
         return $data3;
     }
-    
+
     public function buat_folder($path) {
         //create the folder if it's not exists
-        if(!is_dir($path)) {
-            mkdir($path,0755,TRUE);
-        } 
+        if (!is_dir($path)) {
+            mkdir($path, 0755, TRUE);
+        }
     }
-    
+
     public function cekfile($url_file) {
         $status = FALSE;
         $ch = curl_init($url_file);
@@ -396,22 +398,31 @@ class Modul {
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if($responseCode == 200){
+        if ($responseCode == 200) {
             $status = TRUE;
         }
         return $status;
     }
-    
+
     public function info_file($file) {
-        $data['name'] = $file->getName();// Mengetahui Nama File
-        $data['originalName'] = $file->getClientName();// Mengetahui Nama Asli
-        $data['tempfile'] = $file->getTempName();// Mengetahui Nama TMP File name
-        $data['ext'] = $file->getClientExtension();// Mengetahui extensi File
-        $data['type'] = $file->getClientMimeType();// Mengetahui Mime File
+        $data['name'] = $file->getName(); // Mengetahui Nama File
+        $data['originalName'] = $file->getClientName(); // Mengetahui Nama Asli
+        $data['tempfile'] = $file->getTempName(); // Mengetahui Nama TMP File name
+        $data['ext'] = $file->getClientExtension(); // Mengetahui extensi File
+        $data['type'] = $file->getClientMimeType(); // Mengetahui Mime File
         $data['size_kb'] = $file->getSize('kb'); // Mengetahui Ukuran File dalam kb
-        $data['size_mb'] = $file->getSize('mb');// Mengetahui Ukuran File dalam mb
-        $data['namabaru'] = $file->getRandomName();//define nama fiel yang baru secara acak
-        
+        $data['size_mb'] = $file->getSize('mb'); // Mengetahui Ukuran File dalam mb
+        $data['namabaru'] = $file->getRandomName(); //define nama fiel yang baru secara acak
+
         return $data;
     }
+
+    function folder_exist($folder) {
+        $path = realpath($folder);
+        if ($path !== false AND is_dir($path)) {
+            return $path;
+        }
+        return false;
+    }
+
 }
