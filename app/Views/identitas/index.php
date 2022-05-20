@@ -83,73 +83,73 @@
                                 <input type="text" class="form-control" id="ins" name="ins" autofocus="" autocomplete="off" value="<?php echo $instansi; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="slogan" class="col-sm-2 col-form-label">SLOGAN</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="slogan" name="slogan"  autocomplete="off" value="<?php echo $slogan; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="tahun" class="col-sm-2 col-form-label">TAHUN BERDIRI</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="tahun" name="tahun" autocomplete="off" onkeypress="return hanyaAngka(event,false);" value="<?php echo $tahun; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="pimpinan" class="col-sm-2 col-form-label">PIMPINAN</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="pimpinan" name="pimpinan"  autocomplete="off" value="<?php echo $pimpinan; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="alamat" class="col-sm-2 col-form-label">ALAMAT</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="alamat" name="alamat"  autocomplete="off" value="<?php echo $alamat; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="kdpos" class="col-sm-2 col-form-label">KODE POS</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="kdpos" name="kdpos"  autocomplete="off" onkeypress="return hanyaAngka(event, false);" value="<?php echo $kdpos; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="tlp" class="col-sm-2 col-form-label">TELEPON</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="tlp" name="tlp"  autocomplete="off" onkeypress="return hanyaAngka(event, false);" value="<?php echo $tlp; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="fax" class="col-sm-2 col-form-label">FAX</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fax" name="fax"  autocomplete="off" value="<?php echo $fax; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="fax" class="col-sm-2 col-form-label">EMAIL</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="email" name="email"  autocomplete="off" value="<?php echo $email; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="web" class="col-sm-2 col-form-label">WEBSITE</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="web" name="web"  autocomplete="off" value="<?php echo $website; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="logo" class="col-sm-2 col-form-label">LOGO</label>
                             <div class="col-sm-10">
                                 <input type="file" class="form-control" id="logo" name="logo">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="lat" class="col-sm-2 col-form-label">LINTANG</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="lat" name="lat"  autocomplete="off" value="<?php echo $lat; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row" style="margin-top: -20px;">
                             <label for="lon" class="col-sm-2 col-form-label">BUJUR</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="lon" name="lon" autocomplete="off" value="<?php echo $lon; ?>">

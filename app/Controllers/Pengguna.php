@@ -198,12 +198,46 @@ class Pengguna extends BaseController{
                 }
             }
             $data['logo'] = $def_logo;
+            $data['pangkat'] = $this->model->getAllQ("select * from pangkat where idpangkat <> 'P00001';");
+            $data['korps'] = $this->model->getAllQ("select * from korps where idkorps <> 'K00000';");
             
+            // data personil
+            $idusers = $this->modul->dekrip_url($this->request->uri->getSegment(3));
+            $cek_idusers = $this->model->getAllQR("select count(*) as jml from users where idusers = '".$idusers."';")->jml;
+            if($cek_idusers > 0){
+                $personil = $this->model->getAllQR("select * from users where idusers = '".$idusers."';");
+                $data['pers_head'] = $personil;
+                $data['foto_personil'] = $def_foto;
+                
+                // detil personil
+                $cek_detil = $this->model->getAllQR("SELECT count(*) as jml FROM users_detil where idusers = '".$idusers."';")->jml;
+                if($cek_detil > 0){
+                    $detil_pers = $this->model->getAllQR("SELECT * FROM users_detil where idusers = '".$idusers."';");
+                    $data['dinas_pangkat'] = $detil_pers->ms_dinas_pngkt;
+                    $data['tmt_tni'] = $detil_pers->tmt_tni;
+                    $data['ms_dinas_prajurit'] = $detil_pers->ms_dinas_prajurit;
+                    $data['tmp_lahir'] = $detil_pers->tmp_lahir;
+                    $data['tgl_lahir'] = $detil_pers->tgl_lahir;
+                    $data['suku'] = $detil_pers->suku;
+                    $data['jabatan'] = $detil_pers->jabatan;
+                    
+                }else{
+                    $data['dinas_pangkat'] = "";
+                    $data['tmt_tni'] = "";
+                    $data['ms_dinas_prajurit'] = "";
+                    $data['tmp_lahir'] = "";
+                    $data['tgl_lahir'] = "";
+                    $data['suku'] = "";
+                    $data['jabatan'] = "";
+                }
             
-            echo view('head', $data);
-            echo view('menu');
-            echo view('pengguna/detil');
-            echo view('foot');
+                echo view('head', $data);
+                echo view('menu');
+                echo view('pengguna/detil');
+                echo view('foot');
+            }else{
+                $this->modul->halaman('pengguna');
+            }
         }else{
            $this->modul->halaman('login');
         }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 19, 2022 at 07:35 AM
+-- Generation Time: May 19, 2022 at 02:55 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -151,16 +151,35 @@ INSERT INTO `pangkat` (`idpangkat`, `nama_pangkat`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pendidikan`
+-- Table structure for table `pend_militer`
 --
 
-DROP TABLE IF EXISTS `pendidikan`;
-CREATE TABLE IF NOT EXISTS `pendidikan` (
+DROP TABLE IF EXISTS `pend_militer`;
+CREATE TABLE IF NOT EXISTS `pend_militer` (
   `idpendidikan` varchar(6) CHARACTER SET latin1 NOT NULL,
   `idusers` varchar(20) NOT NULL,
   `nm_pendidikan` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
   `tahun` varchar(4) CHARACTER SET latin1 DEFAULT NULL,
   `keterangan` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  `file` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`idpendidikan`),
+  KEY `FK_pend_militer_users` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pend_umum`
+--
+
+DROP TABLE IF EXISTS `pend_umum`;
+CREATE TABLE IF NOT EXISTS `pend_umum` (
+  `idpendidikan` varchar(6) CHARACTER SET latin1 NOT NULL,
+  `idusers` varchar(20) NOT NULL,
+  `nm_pendidikan` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `tahun` varchar(4) CHARACTER SET latin1 DEFAULT NULL,
+  `keterangan` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
+  `file` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`idpendidikan`),
   KEY `FK_pendidikan_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -198,11 +217,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `nrp` varchar(15) NOT NULL,
   `pass` varchar(45) NOT NULL,
   `nama` varchar(45) NOT NULL,
-  `tgl_lahir` date DEFAULT NULL,
-  `agama` varchar(45) DEFAULT NULL,
-  `kota_asal` varchar(45) DEFAULT NULL,
-  `foto` varchar(150) DEFAULT NULL,
-  `satuan_kerja` varchar(45) DEFAULT NULL,
   `idrole` varchar(6) NOT NULL,
   `idkorps` varchar(6) NOT NULL,
   `idpangkat` varchar(6) NOT NULL,
@@ -214,9 +228,9 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `tgl_lahir`, `agama`, `kota_asal`, `foto`, `satuan_kerja`, `idrole`, `idkorps`, `idpangkat`) VALUES
-('U00001', 'ADMIN', 'aGtq', 'ADMIN', '1991-01-30', 'Islam', 'Surabaya', './assets/images/e7118256aaf4d1de09199e2b6cbe667c.png', 'TNI ANGKATAN LAUT', 'R00001', 'K00000', 'P00001'),
-('U00002', '111', 'aGtq', 'Rampa atika', NULL, NULL, NULL, NULL, NULL, 'R00002', 'K00001', 'P00013');
+INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `idrole`, `idkorps`, `idpangkat`) VALUES
+('U00001', 'ADMIN', 'aGtq', 'ADMIN', 'R00001', 'K00000', 'P00001'),
+('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013');
 
 -- --------------------------------------------------------
 
@@ -249,9 +263,15 @@ CREATE TABLE IF NOT EXISTS `users_detil` (
 --
 
 --
--- Constraints for table `pendidikan`
+-- Constraints for table `pend_militer`
 --
-ALTER TABLE `pendidikan`
+ALTER TABLE `pend_militer`
+  ADD CONSTRAINT `FK_pend_militer_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `pend_umum`
+--
+ALTER TABLE `pend_umum`
   ADD CONSTRAINT `FK_pendidikan_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
