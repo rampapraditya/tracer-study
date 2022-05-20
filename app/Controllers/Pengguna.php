@@ -362,5 +362,90 @@ class Pengguna extends BaseController {
             $this->modul->halaman('login');
         }
     }
-
+    
+    public function load_foto() {
+        if (session()->get("logged_in")) {
+            $idusers = $this->request->uri->getSegment(3);
+            $def_foto = base_url() . '/images/noimg.jpg';
+            $foto = $this->model->getAllQR("select foto from users where idusers = '".$idusers."';")->foto;           
+            if (strlen($foto) > 0) {
+                if (file_exists(ROOTPATH . 'public/uploads/' . $foto)) {
+                    $def_foto = base_url() . '/uploads/' . $foto;
+                }
+            }
+            echo json_encode(array("foto" => $def_foto));
+        } else {
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_p_umum() {
+        if(session()->get("logged_in")){
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAll("pend_umum");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nm_pendidikan;
+                $val[] = $row->tahun;
+                $val[] = '';
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="ganti('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus('."'".$row->idpendidikan."'".','."'".$row->nm_pendidikan."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_pend_umum() {
+        if(session()->get("logged_in")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_pend_umum_file();
+                }
+            }else{
+                $status = $this->simpan_pend_umum();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_pend_umum_file() {
+        return "A";
+    }
+    
+    private function simpan_pend_umum() {
+        $data = array(
+            'idpendidikan' => $this->model->autokode("U","idpendidikan","pend_umum", 2, 7),
+            'idusers' => $this->request->getVar('idusers'),
+            'nm_pendidikan' => $this->request->getVar('nama'),
+            'tahun' => $this->request->getVar('tahun'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("pend_umum", $data);
+        if ($simpan == 1) {
+            $status = "Data tersimpan";
+        } else {
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function ajax_edit_pend_umum() {
+        
+    }
 }

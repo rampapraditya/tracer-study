@@ -1,7 +1,15 @@
 <script type="text/javascript">
-
+    
+    var save_method = "";
+    var tb_p_umum;
+    
     $(document).ready(function () {
-
+        tb_p_umum = $('#tb_p_umum').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum",
+            ordering : false,
+            paging : false,
+            searching : false
+        });
     });
 
     function save() {
@@ -21,8 +29,7 @@
         var tmt_fiktif = document.getElementById('tmt_fiktif').value;
         var agama = document.getElementById('agama').value;
         var suku = document.getElementById('suku').value;
-        //var foto = $('#logo').prop('files')[0];
-
+        
         if (nrp === "") {
             alert("NRP tidak boleh kosong");
         } else if (nama === "") {
@@ -125,10 +132,12 @@
                 type: 'POST',
                 success: function (response) {
                     alert(response.status);
-
+                    
+                    $('#modal_upload_foto').modal('hide');
                     $('#btnSaveFoto').text('Save'); 
                     $('#btnSaveFoto').attr('disabled', false);
-
+                    
+                    load_foto();
                 }, error: function (response) {
                     alert(response.status);
 
@@ -137,6 +146,87 @@
                 }
             });
         }
+    }
+    
+    function load_foto(){
+        var idusers = document.getElementById('idusers').value;
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/load_foto/" + idusers,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('#foto').attr("src", data.foto);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error load foto');
+            }
+        });
+    }
+    
+    function pend_umum(){
+        save_method = "add";
+        $('#form_p_umum')[0].reset();
+        $('#modal_p_umum').modal('show');
+    }
+    
+    function save_p_umum(){
+        var idusers = document.getElementById('idusers').value;
+        var nama = document.getElementById('nm_pend_umum').value;
+        var tahun = document.getElementById('tahun_p_umum').value;
+        var ket = document.getElementById('ket_p_umum').value;
+        var file = $('#file_p_umum').prop('files')[0];
+
+        if (idusers === "") {
+            alert("ID users tidak boleh kosong");
+        }else if(nama === ""){
+            alert("Nama tidak boleh kosong");
+        }else if(tahun === ""){
+            alert("Tahun tidak boleh kosong");
+        } else {
+            $('#btnSaveP_umum').text('Saving...'); 
+            $('#btnSaveP_umum').attr('disabled', true);
+
+            var form_data = new FormData();
+            form_data.append('idusers', idusers);
+            form_data.append('nama', nama);
+            form_data.append('tahun', tahun);
+            form_data.append('ket', ket);
+            form_data.append('file', file);
+            
+            var url = "";
+            if (save_method === 'add') {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_pend_umum";
+            } else {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_umum";
+            }
+            
+            $.ajax({
+                url: url,
+                dataType: 'JSON',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'POST',
+                success: function (response) {
+                    alert(response.status);
+                    
+                    $('#modal_p_umum').modal('hide');
+                    
+                    $('#btnSaveP_umum').text('Save'); 
+                    $('#btnSaveP_umum').attr('disabled', false);
+                    
+                }, error: function (response) {
+                    alert(response.status);
+
+                    $('#btnSaveP_umum').text('Save');
+                    $('#btnSaveP_umum').attr('disabled', false);
+                }
+            });
+        }
+    }
+    
+    function closemodal_p_umum(){
+        $('#modal_p_umum').modal('hide');
     }
     
 </script>
@@ -308,20 +398,28 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav_p_umum" role="tabpanel" aria-labelledby="nav_p_umum">
-                            <table id="tb_p_umum" class="table table-bordered" style="width: 100%; font-size: 11px;">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>NAMA PENDIDIKAN</th>
-                                        <th>TAHUN</th>
-                                        <th>KETERANGAN</th>
-                                        <th>FILE</th>
-                                        <th style="text-align: center;">AKSI</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="pend_umum()"> Pendidikan Umum </button>
+                                </div>
+                                
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <table id="tb_p_umum" class="table table-bordered" style="width: 100%; font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>NAMA PENDIDIKAN</th>
+                                                <th>TAHUN</th>
+                                                <th>FILE</th>
+                                                <th>KETERANGAN</th>
+                                                <th style="text-align: center;">AKSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="nav_p_militer" role="tabpanel" aria-labelledby="nav_p_militer">
 
@@ -358,6 +456,51 @@
             <div class="modal-footer">
                 <button id="btnSaveFoto" type="button" class="btn btn-primary btn-xs" onclick="save_foto();">Save</button>
                 <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_foto();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_p_umum" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Pendidikan Umum</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_p_umum();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_p_umum" class="form-horizontal">
+                    <div class="form-group row">
+                        <label for="nm_pend_umum" class="col-sm-3 col-form-label">Pendidikan</label>
+                        <div class="col-sm-9">
+                            <input id="nm_pend_umum" name="nm_pend_umum" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="tahun_p_umum" class="col-sm-3 col-form-label">Tahun</label>
+                        <div class="col-sm-9">
+                            <input id="tahun_p_umum" name="tahun_p_umum" class="form-control" type="text" autocomplete="off" onkeypress="return hanyaAngka(event,false);">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="file_p_umum" class="col-sm-3 col-form-label">File</label>
+                        <div class="col-sm-9">
+                            <input id="file_p_umum" name="file_p_umum" class="form-control" type="file" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="ket_p_umum" class="col-sm-3 col-form-label">Keterangan</label>
+                        <div class="col-sm-9">
+                            <input id="ket_p_umum" name="ket_p_umum" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSaveP_umum" type="button" class="btn btn-primary btn-xs" onclick="save_p_umum();">Save</button>
+                <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_p_umum();">Close</button>
             </div>
         </div>
     </div>
