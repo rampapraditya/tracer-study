@@ -12,6 +12,24 @@
         });
     });
 
+    function load_pend_umum(){
+        tb_p_umum = $('#tb_p_umum').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        tb_p_umum.destroy();
+        tb_p_umum = $('#tb_p_umum').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+    }
+    
     function save() {
         var idusers = document.getElementById('idusers').value;
         var nrp = document.getElementById('nrp').value;
@@ -169,6 +187,7 @@
     }
     
     function save_p_umum(){
+        var kode = document.getElementById('kode_pend_umum').value;
         var idusers = document.getElementById('idusers').value;
         var nama = document.getElementById('nm_pend_umum').value;
         var tahun = document.getElementById('tahun_p_umum').value;
@@ -186,6 +205,7 @@
             $('#btnSaveP_umum').attr('disabled', true);
 
             var form_data = new FormData();
+            form_data.append('kode', kode);
             form_data.append('idusers', idusers);
             form_data.append('nama', nama);
             form_data.append('tahun', tahun);
@@ -211,6 +231,7 @@
                     alert(response.status);
                     
                     $('#modal_p_umum').modal('hide');
+                    load_pend_umum();
                     
                     $('#btnSaveP_umum').text('Save'); 
                     $('#btnSaveP_umum').attr('disabled', false);
@@ -227,6 +248,42 @@
     
     function closemodal_p_umum(){
         $('#modal_p_umum').modal('hide');
+    }
+    
+    function show_pend_umum(id){
+        save_method = 'update';
+        $('#form_p_umum')[0].reset();
+        $('#modal_p_umum').modal('show');
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/show_pend_umum/" + id,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('[name="kode_pend_umum"]').val(data.idpendidikan);
+                $('[name="nm_pend_umum"]').val(data.nm_pendidikan);
+                $('[name="tahun_p_umum"]').val(data.tahun);
+                $('[name="ket_p_umum"]').val(data.keterangan);
+                
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error get data');
+            }
+        });
+    }
+    
+    function hapus_pend_umum(id, nama){
+        if (confirm("Apakah anda yakin menghapus pendidikan umum " + nama + " ?")) {
+            $.ajax({
+                url: "<?php echo base_url(); ?>/pengguna/hapuspendumum/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function (data) {
+                    alert(data.status);
+                    load_pend_umum();
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error hapus data');
+                }
+            });
+        }
     }
     
 </script>
@@ -472,6 +529,7 @@
             </div>
             <div class="modal-body">
                 <form id="form_p_umum" class="form-horizontal">
+                    <input type="hidden" id="kode_pend_umum" name="kode_pend_umum">
                     <div class="form-group row">
                         <label for="nm_pend_umum" class="col-sm-3 col-form-label">Pendidikan</label>
                         <div class="col-sm-9">

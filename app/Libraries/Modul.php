@@ -424,5 +424,16 @@ class Modul {
         }
         return false;
     }
-
+    
+    public function getPublicPath() {
+        return base_url().'/uploads/';
+    }
+    
+    public function hapus_file($path_file) {
+        if(strlen($path_file)){
+            if(file_exists('./uploads/'.$path_file)){
+                unlink('./uploads/'.$path_file);
+            }
+        }
+    }
 }
