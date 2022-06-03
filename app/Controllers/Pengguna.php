@@ -178,6 +178,7 @@ class Pengguna extends BaseController {
             $data['nrp'] = session()->get('nrp');
             $data['nama'] = session()->get("nama");
             $data['role'] = session()->get("role");
+            $data['defimg'] = base_url().'/images/noimg.jpg';
 
             // membaca foto profile
             $def_foto = base_url() . '/images/noimg.jpg';
@@ -389,7 +390,7 @@ class Pengguna extends BaseController {
                 $val[] = $no;
                 $val[] = $row->nm_pendidikan;
                 $val[] = $row->tahun;
-                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idpendidikan."'".','."'umum'".')">';
                 $val[] = $row->keterangan;
                 $val[] = '<div style="text-align: center;">'
                         . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_umum('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
@@ -426,12 +427,13 @@ class Pengguna extends BaseController {
     private function simpan_pend_umum_file() {
         $nm_folder = $this->request->getVar('idusers');
         $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$info_file['name'])){
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder);
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
             if($status_upload){
                 $data = array(
                     'idpendidikan' => $this->model->autokode("U","idpendidikan","pend_umum", 2, 7),
@@ -439,7 +441,7 @@ class Pengguna extends BaseController {
                     'nm_pendidikan' => $this->request->getVar('nama'),
                     'tahun' => $this->request->getVar('tahun'),
                     'keterangan' => $this->request->getVar('ket'),
-                    'file' => $nm_folder.'/'.$info_file['name']
+                    'file' => $nm_folder.'/'.$namaFile
                 );
                 $simpan = $this->model->add("pend_umum",$data);
                 if($simpan == 1){
@@ -506,12 +508,13 @@ class Pengguna extends BaseController {
             
         $nm_folder = $this->request->getVar('idusers');
         $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$info_file['name'])){
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder);
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
             if($status_upload){
                 $data = array(
                     'idpendidikan' => $this->model->autokode("U","idpendidikan","pend_umum", 2, 7),
@@ -519,7 +522,7 @@ class Pengguna extends BaseController {
                     'nm_pendidikan' => $this->request->getVar('nama'),
                     'tahun' => $this->request->getVar('tahun'),
                     'keterangan' => $this->request->getVar('ket'),
-                    'file' => $nm_folder.'/'.$info_file['name']
+                    'file' => $nm_folder.'/'.$fileName
                 );
                 $kond['idpendidikan'] = $this->request->getVar('kode');
                 $update = $this->model->update("pend_umum",$data, $kond);
@@ -568,6 +571,70 @@ class Pengguna extends BaseController {
             }
             echo json_encode(array("status" => $status));
         }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_p_militer() {
+        if(session()->get("logged_in")){
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAll("pend_militer");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nm_pendidikan;
+                $val[] = $row->tahun;
+                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_umum('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_umum('."'".$row->idpendidikan."'".','."'".$row->nm_pendidikan."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function load_detil_img() {
+        if (session()->get("logged_in")) {
+            $kode = $this->request->uri->getSegment(3);
+            $mode = $this->request->uri->getSegment(4);
+            $def_foto = base_url().'/images/noimg.jpg';
+            if($mode == "umum"){
+                $foto = $this->model->getAllQR("select file from pend_umum where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "militer"){
+                $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
+            }
+            
+            if (strlen($foto) > 0) {
+                if (file_exists(ROOTPATH . 'public/uploads/' . $foto)) {
+                    $def_foto = base_url() . '/uploads/' . $foto;
+                }
+            }
+            echo json_encode(array("foto" => $def_foto));
+        } else {
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function unduhfile() {
+        if (session()->get("logged_in")) {
+            $kode = $this->request->uri->getSegment(3);
+            $mode = $this->request->uri->getSegment(4);
+            if($mode == "umum"){
+                $foto = $this->model->getAllQR("select file from pend_umum where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "militer"){
+                $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
+            }
+            return $this->response->download('uploads/' . $foto, null);
+        }else {
             $this->modul->halaman('login');
         }
     }

@@ -1,11 +1,18 @@
 <script type="text/javascript">
     
     var save_method = "";
-    var tb_p_umum;
+    var tb_p_umum, tb_p_militer;
     
     $(document).ready(function () {
         tb_p_umum = $('#tb_p_umum').DataTable({
             ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum",
+            ordering : false,
+            paging : false,
+            searching : false
+        });
+        
+        tb_p_militer = $('#tb_p_militer').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
             ordering : false,
             paging : false,
             searching : false
@@ -182,17 +189,19 @@
     
     function pend_umum(){
         save_method = "add";
-        $('#form_p_umum')[0].reset();
-        $('#modal_p_umum').modal('show');
+        document.getElementById('mode_pend').value = "umum";
+        $('#form_pendidikan')[0].reset();
+        $('#modal_pendidikan').modal('show');
     }
     
-    function save_p_umum(){
-        var kode = document.getElementById('kode_pend_umum').value;
+    function save_pendidikan(){
+        var kode = document.getElementById('kode_pend').value;
         var idusers = document.getElementById('idusers').value;
-        var nama = document.getElementById('nm_pend_umum').value;
-        var tahun = document.getElementById('tahun_p_umum').value;
-        var ket = document.getElementById('ket_p_umum').value;
-        var file = $('#file_p_umum').prop('files')[0];
+        var nama = document.getElementById('nm_pend').value;
+        var tahun = document.getElementById('tahun_pendidikan').value;
+        var ket = document.getElementById('ket_pendidikan').value;
+        var file = $('#file_pendidikan').prop('files')[0];
+        var mode = document.getElementById('mode_pend').value;
 
         if (idusers === "") {
             alert("ID users tidak boleh kosong");
@@ -201,8 +210,8 @@
         }else if(tahun === ""){
             alert("Tahun tidak boleh kosong");
         } else {
-            $('#btnSaveP_umum').text('Saving...'); 
-            $('#btnSaveP_umum').attr('disabled', true);
+            $('#btnSaveP').text('Saving...'); 
+            $('#btnSaveP').attr('disabled', true);
 
             var form_data = new FormData();
             form_data.append('kode', kode);
@@ -213,10 +222,14 @@
             form_data.append('file', file);
             
             var url = "";
-            if (save_method === 'add') {
+            if ( (save_method === "add") && (mode === "umum")) {
                 url = "<?php echo base_url(); ?>/pengguna/ajax_add_pend_umum";
-            } else {
+            } else if ((save_method === "update") && (mode === "umum")) {
                 url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_umum";
+            } else if ((save_method === "add") && (mode === "militer")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_militer";
+            } else if ((save_method === "update") && (mode === "militer")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_militer";
             }
             
             $.ajax({
@@ -230,39 +243,39 @@
                 success: function (response) {
                     alert(response.status);
                     
-                    $('#modal_p_umum').modal('hide');
+                    $('#modal_pendidikan').modal('hide');
                     load_pend_umum();
                     
-                    $('#btnSaveP_umum').text('Save'); 
-                    $('#btnSaveP_umum').attr('disabled', false);
+                    $('#btnSaveP').text('Save'); 
+                    $('#btnSaveP').attr('disabled', false);
                     
                 }, error: function (response) {
                     alert(response.status);
 
-                    $('#btnSaveP_umum').text('Save');
-                    $('#btnSaveP_umum').attr('disabled', false);
+                    $('#btnSaveP').text('Save');
+                    $('#btnSaveP').attr('disabled', false);
                 }
             });
         }
     }
     
-    function closemodal_p_umum(){
-        $('#modal_p_umum').modal('hide');
+    function closemodal_pendidikan(){
+        $('#modal_pendidikan').modal('hide');
     }
     
     function show_pend_umum(id){
         save_method = 'update';
-        $('#form_p_umum')[0].reset();
-        $('#modal_p_umum').modal('show');
+        $('#form_pendidikan')[0].reset();
+        $('#modal_pendidikan').modal('show');
         $.ajax({
             url: "<?php echo base_url(); ?>/pengguna/show_pend_umum/" + id,
             type: "POST",
             dataType: "JSON",
             success: function (data) {
-                $('[name="kode_pend_umum"]').val(data.idpendidikan);
-                $('[name="nm_pend_umum"]').val(data.nm_pendidikan);
-                $('[name="tahun_p_umum"]').val(data.tahun);
-                $('[name="ket_p_umum"]').val(data.keterangan);
+                $('[name="kode_pend"]').val(data.idpendidikan);
+                $('[name="nm_pend"]').val(data.nm_pendidikan);
+                $('[name="tahun_pendidikan"]').val(data.tahun);
+                $('[name="ket_pendidikan"]').val(data.keterangan);
                 
             }, error: function (jqXHR, textStatus, errorThrown) {
                 alert('Error get data');
@@ -284,6 +297,37 @@
                 }
             });
         }
+    }
+    
+    function showimg(kode, mode){
+        $('#modal_show_img').modal('show');
+        
+        document.getElementById('kode').value = kode;
+        document.getElementById('mode').value = mode;
+        
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/load_detil_img/" + kode + "/" + mode,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('#imgdetil').attr("src", data.foto);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error load foto');
+            }
+        });
+    }
+    
+    function pend_militer(){
+        save_method = "add";
+        document.getElementById('mode_pend').value = "militer";
+        $('#form_pendidikan')[0].reset();
+        $('#modal_pendidikan').modal('show');
+    }
+    
+    function unduh(){
+        var kode = document.getElementById('kode').value;
+        var mode = document.getElementById('mode').value;
+        window.location.href = "<?php echo base_url(); ?>/pengguna/unduhfile/" + kode + "/" + mode;
     }
     
 </script>
@@ -459,7 +503,6 @@
                                 <div class="col-md-12">
                                     <button class="btn btn-primary btn-xs" onclick="pend_umum()"> Pendidikan Umum </button>
                                 </div>
-                                
                                 <div class="col-md-12" style="margin-top: 10px;">
                                     <table id="tb_p_umum" class="table table-bordered" style="width: 100%; font-size: 11px;">
                                         <thead>
@@ -479,7 +522,27 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav_p_militer" role="tabpanel" aria-labelledby="nav_p_militer">
-
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="pend_militer()"> Pendidikan Militer </button>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <table id="tb_p_militer" class="table table-bordered" style="width: 100%; font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>NAMA PENDIDIKAN</th>
+                                                <th>TAHUN</th>
+                                                <th>FILE</th>
+                                                <th>KETERANGAN</th>
+                                                <th style="text-align: center;">AKSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="nav_b_asing" role="tabpanel" aria-labelledby="nav_b_asing">
 
@@ -518,47 +581,70 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal_p_umum" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modal_pendidikan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5>Pendidikan Umum</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_p_umum();">
+                <h5 id="judul_pendidikan">Pendidikan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_pendidikan();">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="form_p_umum" class="form-horizontal">
-                    <input type="hidden" id="kode_pend_umum" name="kode_pend_umum">
+                <form id="form_pendidikan" class="form-horizontal">
+                    <input type="hidden" id="kode_pend" name="kode_pend">
+                    <input type="hidden" id="mode_pend" name="mode_pend">
+                    
                     <div class="form-group row">
-                        <label for="nm_pend_umum" class="col-sm-3 col-form-label">Pendidikan</label>
+                        <label for="nm_pend" class="col-sm-3 col-form-label">Pendidikan</label>
                         <div class="col-sm-9">
-                            <input id="nm_pend_umum" name="nm_pend_umum" class="form-control" type="text" autocomplete="off">
+                            <input id="nm_pend" name="nm_pend" class="form-control" type="text" autocomplete="off">
                         </div>
                     </div>
                     <div class="form-group row" style="margin-top: -12px;">
-                        <label for="tahun_p_umum" class="col-sm-3 col-form-label">Tahun</label>
+                        <label for="tahun_pendidikan" class="col-sm-3 col-form-label">Tahun</label>
                         <div class="col-sm-9">
-                            <input id="tahun_p_umum" name="tahun_p_umum" class="form-control" type="text" autocomplete="off" onkeypress="return hanyaAngka(event,false);">
+                            <input id="tahun_pendidikan" name="tahun_pendidikan" class="form-control" type="text" autocomplete="off" onkeypress="return hanyaAngka(event,false);">
                         </div>
                     </div>
                     <div class="form-group row" style="margin-top: -12px;">
-                        <label for="file_p_umum" class="col-sm-3 col-form-label">File</label>
+                        <label for="file_pendidikan" class="col-sm-3 col-form-label">File</label>
                         <div class="col-sm-9">
-                            <input id="file_p_umum" name="file_p_umum" class="form-control" type="file" autocomplete="off">
+                            <input id="file_pendidikan" name="file_pendidikan" class="form-control" type="file" autocomplete="off">
                         </div>
                     </div>
                     <div class="form-group row" style="margin-top: -12px;">
-                        <label for="ket_p_umum" class="col-sm-3 col-form-label">Keterangan</label>
+                        <label for="ket_pendidikan" class="col-sm-3 col-form-label">Keterangan</label>
                         <div class="col-sm-9">
-                            <input id="ket_p_umum" name="ket_p_umum" class="form-control" type="text" autocomplete="off">
+                            <input id="ket_pendidikan" name="ket_pendidikan" class="form-control" type="text" autocomplete="off">
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="btnSaveP_umum" type="button" class="btn btn-primary btn-xs" onclick="save_p_umum();">Save</button>
-                <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_p_umum();">Close</button>
+                <button id="btnSaveP" type="button" class="btn btn-primary btn-xs" onclick="save_pendidikan();">Save</button>
+                <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_pendidikan();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_show_img" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Detail Gambar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_detil_img();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="kode" name="kode">
+                <input type="hidden" id="mode" name="mode">
+                <img id="imgdetil" src="<?php echo $defimg; ?>" class="img-thumbnail">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-xs" onclick="unduh()">Download</button>
             </div>
         </div>
     </div>
