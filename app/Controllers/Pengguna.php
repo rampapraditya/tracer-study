@@ -484,6 +484,16 @@ class Pengguna extends BaseController {
         }
     }
     
+    public function show_pend_militer() {
+        if(session()->get("logged_in")){
+            $kondisi['idpendidikan'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("pend_militer", $kondisi);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
     public function ajax_edit_pend_umum() {
         if(session()->get("logged_in")){
             if (isset($_FILES['file']['name'])) {
@@ -517,7 +527,6 @@ class Pengguna extends BaseController {
             $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
             if($status_upload){
                 $data = array(
-                    'idpendidikan' => $this->model->autokode("U","idpendidikan","pend_umum", 2, 7),
                     'idusers' => $this->request->getVar('idusers'),
                     'nm_pendidikan' => $this->request->getVar('nama'),
                     'tahun' => $this->request->getVar('tahun'),
@@ -588,8 +597,8 @@ class Pengguna extends BaseController {
                 $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
                 $val[] = $row->keterangan;
                 $val[] = '<div style="text-align: center;">'
-                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_umum('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
-                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_umum('."'".$row->idpendidikan."'".','."'".$row->nm_pendidikan."'".')">Hapus</button>'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_militer('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_militer('."'".$row->idpendidikan."'".','."'".$row->nm_pendidikan."'".')">Hapus</button>'
                         . '</div>';
                 $data[] = $val;
                 
@@ -635,6 +644,163 @@ class Pengguna extends BaseController {
             }
             return $this->response->download('uploads/' . $foto, null);
         }else {
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_pend_militer() {
+        if(session()->get("logged_in")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_pend_militer_file();
+                }
+            }else{
+                $status = $this->simpan_pend_militer();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_pend_militer_file() {
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
+            if($status_upload){
+                $data = array(
+                    'idpendidikan' => $this->model->autokode("M","idpendidikan","pend_militer", 2, 7),
+                    'idusers' => $this->request->getVar('idusers'),
+                    'nm_pendidikan' => $this->request->getVar('nama'),
+                    'tahun' => $this->request->getVar('tahun'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$namaFile
+                );
+                $simpan = $this->model->add("pend_militer",$data);
+                if($simpan == 1){
+                    $status = "Data tersimpan";
+                }else{
+                    $status = "Data gagal tersimpan";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function simpan_pend_militer() {
+        $data = array(
+            'idpendidikan' => $this->model->autokode("M","idpendidikan","pend_militer", 2, 7),
+            'idusers' => $this->request->getVar('idusers'),
+            'nm_pendidikan' => $this->request->getVar('nama'),
+            'tahun' => $this->request->getVar('tahun'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("pend_militer", $data);
+        if ($simpan == 1) {
+            $status = "Data tersimpan";
+        } else {
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function ajax_edit_pend_militer() {
+        if(session()->get("logged_in")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->update_pend_militer_file();
+                }
+            }else{
+                $status = $this->update_pend_militer();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function update_pend_militer_file() {
+        // hapus file lama
+        $file_lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$this->request->getVar('kode')."';")->file;
+        $this->modul->hapus_file($file_lawas);
+            
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
+            if($status_upload){
+                $data = array(
+                    'idusers' => $this->request->getVar('idusers'),
+                    'nm_pendidikan' => $this->request->getVar('nama'),
+                    'tahun' => $this->request->getVar('tahun'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$fileName
+                );
+                $kond['idpendidikan'] = $this->request->getVar('kode');
+                $update = $this->model->update("pend_militer",$data, $kond);
+                if($update == 1){
+                    $status = "Data terupdate";
+                }else{
+                    $status = "Data gagal terupdate";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function update_pend_militer() {
+        $data = array(
+            'idusers' => $this->request->getVar('idusers'),
+            'nm_pendidikan' => $this->request->getVar('nama'),
+            'tahun' => $this->request->getVar('tahun'),
+            'keterangan' => $this->request->getVar('ket')
+        );
+        $kond['idpendidikan'] = $this->request->getVar('kode');
+        $update = $this->model->update("pend_militer", $data, $kond);
+        if ($update == 1) {
+            $status = "Data terupdate";
+        } else {
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function hapuspendmiliter() {
+        if(session()->get("logged_in")){
+            $idpendidikan = $this->request->uri->getSegment(3);
+            // cek file
+            $file_lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$idpendidikan."';")->file;
+            $this->modul->hapus_file($file_lawas);
+            
+            $kond['idpendidikan'] = $idpendidikan;
+            $hapus = $this->model->delete("pend_militer",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
             $this->modul->halaman('login');
         }
     }

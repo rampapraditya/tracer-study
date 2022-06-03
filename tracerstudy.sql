@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 19, 2022 at 02:55 PM
+-- Generation Time: Jun 03, 2022 at 08:34 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -166,6 +166,13 @@ CREATE TABLE IF NOT EXISTS `pend_militer` (
   KEY `FK_pend_militer_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `pend_militer`
+--
+
+INSERT INTO `pend_militer` (`idpendidikan`, `idusers`, `nm_pendidikan`, `tahun`, `keterangan`, `file`) VALUES
+('M00001', 'U00002', 'SESKO', '2000', '-', 'U00002/1654245233_4810ca106b97903d35df.jpg');
+
 -- --------------------------------------------------------
 
 --
@@ -183,6 +190,13 @@ CREATE TABLE IF NOT EXISTS `pend_umum` (
   PRIMARY KEY (`idpendidikan`),
   KEY `FK_pendidikan_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `pend_umum`
+--
+
+INSERT INTO `pend_umum` (`idpendidikan`, `idusers`, `nm_pendidikan`, `tahun`, `keterangan`, `file`) VALUES
+('U00002', 'U00002', 'SD', '2000', 'keterangan umum', 'U00002/1654243733_f9fd01852ee50da5630d.jpg');
 
 -- --------------------------------------------------------
 
@@ -220,6 +234,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `idrole` varchar(6) NOT NULL,
   `idkorps` varchar(6) NOT NULL,
   `idpangkat` varchar(6) NOT NULL,
+  `foto` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`idusers`),
   KEY `FK_users_role` (`idrole`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -228,9 +243,9 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `idrole`, `idkorps`, `idpangkat`) VALUES
-('U00001', 'ADMIN', 'aGtq', 'ADMIN', 'R00001', 'K00000', 'P00001'),
-('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013');
+INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `idrole`, `idkorps`, `idpangkat`, `foto`) VALUES
+('U00001', 'ADMIN', 'aGtq', 'ADMIN', 'R00001', 'K00000', 'P00001', 'U00002/atika.png'),
+('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013', 'U00002/atika.png');
 
 -- --------------------------------------------------------
 
@@ -257,6 +272,13 @@ CREATE TABLE IF NOT EXISTS `users_detil` (
   PRIMARY KEY (`idusers_detil`),
   KEY `FK_users_detil_user` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `users_detil`
+--
+
+INSERT INTO `users_detil` (`idusers_detil`, `idusers`, `ms_dinas_pngkt`, `tmt_tni`, `ms_dinas_prajurit`, `tmp_lahir`, `tgl_lahir`, `suku`, `jabatan`, `lama_jabatan`, `alamat`, `tmt_fiktif`, `jkel`, `agama`) VALUES
+('D00001', 'U00002', '-', '2022-05-20', '-', 'Surabaya', '1989-08-02', 'Jawa', '-', '-', 'Gunung Anyar', '-', 'L', 'Islam');
 
 --
 -- Constraints for dumped tables

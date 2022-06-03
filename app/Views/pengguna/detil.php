@@ -37,6 +37,24 @@
         });
     }
     
+    function load_pend_militer(){
+        tb_p_militer = $('#tb_p_militer').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        tb_p_militer.destroy();
+        tb_p_militer = $('#tb_p_militer').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+    }
+    
     function save() {
         var idusers = document.getElementById('idusers').value;
         var nrp = document.getElementById('nrp').value;
@@ -190,6 +208,7 @@
     function pend_umum(){
         save_method = "add";
         document.getElementById('mode_pend').value = "umum";
+        $('#judul_pendidikan').html("Tambah Pendidikan Umum");
         $('#form_pendidikan')[0].reset();
         $('#modal_pendidikan').modal('show');
     }
@@ -227,7 +246,7 @@
             } else if ((save_method === "update") && (mode === "umum")) {
                 url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_umum";
             } else if ((save_method === "add") && (mode === "militer")) {
-                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_militer";
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_pend_militer";
             } else if ((save_method === "update") && (mode === "militer")) {
                 url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_militer";
             }
@@ -245,6 +264,7 @@
                     
                     $('#modal_pendidikan').modal('hide');
                     load_pend_umum();
+                    load_pend_militer();
                     
                     $('#btnSaveP').text('Save'); 
                     $('#btnSaveP').attr('disabled', false);
@@ -265,8 +285,10 @@
     
     function show_pend_umum(id){
         save_method = 'update';
+        $('#judul_pendidikan').html("Ganti Pendidikan Umum");
         $('#form_pendidikan')[0].reset();
         $('#modal_pendidikan').modal('show');
+        document.getElementById('mode_pend').value = "umum";
         $.ajax({
             url: "<?php echo base_url(); ?>/pengguna/show_pend_umum/" + id,
             type: "POST",
@@ -320,6 +342,7 @@
     function pend_militer(){
         save_method = "add";
         document.getElementById('mode_pend').value = "militer";
+        $('#judul_pendidikan').html("Tambah Pendidikan Militer");
         $('#form_pendidikan')[0].reset();
         $('#modal_pendidikan').modal('show');
     }
@@ -328,6 +351,44 @@
         var kode = document.getElementById('kode').value;
         var mode = document.getElementById('mode').value;
         window.location.href = "<?php echo base_url(); ?>/pengguna/unduhfile/" + kode + "/" + mode;
+    }
+    
+    function show_pend_militer(id){
+        save_method = 'update';
+        $('#judul_pendidikan').html("Ganti Pendidikan Militer");
+        $('#form_pendidikan')[0].reset();
+        $('#modal_pendidikan').modal('show');
+        document.getElementById('mode_pend').value = "militer";
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/show_pend_militer/" + id,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('[name="kode_pend"]').val(data.idpendidikan);
+                $('[name="nm_pend"]').val(data.nm_pendidikan);
+                $('[name="tahun_pendidikan"]').val(data.tahun);
+                $('[name="ket_pendidikan"]').val(data.keterangan);
+                
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error get data');
+            }
+        });
+    }
+    
+    function hapus_pend_militer(id, nama){
+        if (confirm("Apakah anda yakin menghapus pendidikan militer " + nama + " ?")) {
+            $.ajax({
+                url: "<?php echo base_url(); ?>/pengguna/hapuspendmiliter/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function (data) {
+                    alert(data.status);
+                    load_pend_militer();
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error hapus data');
+                }
+            });
+        }
     }
     
 </script>
