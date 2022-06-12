@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 12, 2022 at 03:31 AM
+-- Generation Time: Jun 12, 2022 at 05:15 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -54,14 +54,6 @@ CREATE TABLE IF NOT EXISTS `b_daerah` (
   PRIMARY KEY (`idb_daerah`),
   KEY `FK_b_daerah_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `b_daerah`
---
-
-INSERT INTO `b_daerah` (`idb_daerah`, `idusers`, `nm_bahasa`, `keterangan`, `file`) VALUES
-('B00001', 'U00002', 'Jawa', 'bahsa jawa', 'U00002/1655004399_d2f4959397b6a8c467b6.png'),
-('B00002', 'U00002', 'Kromo', 'bahasa krowmo', '');
 
 -- --------------------------------------------------------
 
@@ -243,6 +235,41 @@ INSERT INTO `pend_umum` (`idpendidikan`, `idusers`, `nm_pendidikan`, `tahun`, `k
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `riwayat_jabatan`
+--
+
+DROP TABLE IF EXISTS `riwayat_jabatan`;
+CREATE TABLE IF NOT EXISTS `riwayat_jabatan` (
+  `idr_jab` varchar(6) NOT NULL,
+  `idusers` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+  `tanggal` date NOT NULL,
+  `jabatan` varchar(250) NOT NULL,
+  `keterangan` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`idr_jab`),
+  KEY `FK_riwayat_jabatan_users` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `riwayat_pangkat`
+--
+
+DROP TABLE IF EXISTS `riwayat_pangkat`;
+CREATE TABLE IF NOT EXISTS `riwayat_pangkat` (
+  `idriwayat_pangkat` varchar(6) NOT NULL,
+  `idusers` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+  `tanggal` date NOT NULL,
+  `idpangkat` varchar(6) CHARACTER SET utf8mb4 NOT NULL,
+  `keterangan` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`idriwayat_pangkat`),
+  KEY `FK_riwayat_pangkat_users` (`idusers`),
+  KEY `FK_riwayat_pangkat_pangkat` (`idpangkat`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `role`
 --
 
@@ -320,7 +347,8 @@ CREATE TABLE IF NOT EXISTS `users_detil` (
 --
 
 INSERT INTO `users_detil` (`idusers_detil`, `idusers`, `ms_dinas_pngkt`, `tmt_tni`, `ms_dinas_prajurit`, `tmp_lahir`, `tgl_lahir`, `suku`, `jabatan`, `lama_jabatan`, `alamat`, `tmt_fiktif`, `jkel`, `agama`) VALUES
-('D00001', 'U00002', '-', '2022-05-20', '-', 'Surabaya', '1989-08-02', 'Jawa', '-', '-', 'Gunung Anyar', '-', 'L', 'Islam');
+('D00001', 'U00002', '-', '2022-05-20', '-', 'Surabaya', '1989-08-02', 'Jawa', '-', '-', 'Gunung Anyar', '-', 'L', 'Islam'),
+('D00002', 'U00001', NULL, NULL, NULL, NULL, '1991-08-02', NULL, NULL, NULL, NULL, NULL, NULL, 'Islam');
 
 --
 -- Constraints for dumped tables
@@ -349,6 +377,19 @@ ALTER TABLE `pend_militer`
 --
 ALTER TABLE `pend_umum`
   ADD CONSTRAINT `FK_pendidikan_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `riwayat_jabatan`
+--
+ALTER TABLE `riwayat_jabatan`
+  ADD CONSTRAINT `FK_riwayat_jabatan_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `riwayat_pangkat`
+--
+ALTER TABLE `riwayat_pangkat`
+  ADD CONSTRAINT `FK_riwayat_pangkat_pangkat` FOREIGN KEY (`idpangkat`) REFERENCES `pangkat` (`idpangkat`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_riwayat_pangkat_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `users`

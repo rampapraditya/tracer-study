@@ -49,8 +49,38 @@ class Profile extends BaseController {
             //$data['korps'] = $this->model->getAll("korps");
             //$data['pangkat'] = $this->model->getAll("pangkat");
             
-            $kondisi['idusers'] = $data['username'];
-            $data['tersimpan'] = $this->model->get_by_id("users", $kondisi);
+            // mencari nrp
+            $data['nrp'] = $this->model->getAllQR("select nrp from users where idusers = '" . $data['username'] . "';")->nrp;
+            
+            $cek_detil = $this->model->getAllQR("SELECT count(*) as jml FROM users_detil where idusers = '" . $data['username'] . "';")->jml;
+            if ($cek_detil > 0) {
+                $detil_pers = $this->model->getAllQR("SELECT * FROM users_detil where idusers = '" . $data['username'] . "';");
+                $data['dinas_pangkat'] = $detil_pers->ms_dinas_pngkt;
+                $data['tmt_tni'] = $detil_pers->tmt_tni;
+                $data['ms_dinas_prajurit'] = $detil_pers->ms_dinas_prajurit;
+                $data['tmp_lahir'] = $detil_pers->tmp_lahir;
+                $data['tgl_lahir'] = $detil_pers->tgl_lahir;
+                $data['suku'] = $detil_pers->suku;
+                $data['jabatan'] = $detil_pers->jabatan;
+                $data['lama_jabatan'] = $detil_pers->lama_jabatan;
+                $data['alamat'] = $detil_pers->alamat;
+                $data['tmt_fiktif'] = $detil_pers->tmt_fiktif;
+                $data['jkel'] = $detil_pers->jkel;
+                $data['agama'] = $detil_pers->agama;
+            } else {
+                $data['dinas_pangkat'] = "";
+                $data['tmt_tni'] = "";
+                $data['ms_dinas_prajurit'] = "";
+                $data['tmp_lahir'] = "";
+                $data['tgl_lahir'] = "";
+                $data['suku'] = "";
+                $data['jabatan'] = "";
+                $data['lama_jabatan'] = "";
+                $data['alamat'] = "";
+                $data['tmt_fiktif'] = "";
+                $data['jkel'] = "";
+                $data['agama'] = "";
+            }
             
             echo view('head', $data);
             echo view('menu');
@@ -65,16 +95,33 @@ class Profile extends BaseController {
         if(session()->get("logged_in")){
             $idusers = session()->get("username");
             
+            // update untuk head
             $data = array(
                 'nrp' => $this->request->getVar('nrp'),
-                'nama' => $this->request->getVar('nama'),
-                'tgl_lahir' => $this->request->getVar('tgllahir'),
-                'agama' => $this->request->getVar('agama'),
-                'kota_asal' => $this->request->getVar('kota'),
-                'satuan_kerja' => $this->request->getVar('satker')
+                'nama' => $this->request->getVar('nama')
             );
             $kond['idusers'] = $idusers;
-            $update = $this->model->update("users",$data,$kond);
+            $this->model->update("users",$data,$kond);
+            
+            // cek untuk detil
+            $cek = $this->model->getAllQR("select count(*) as jml from users_detil where idusers = '".$idusers."';")->jml;
+            if($cek > 0){
+                $data_detil = array(
+                    'tgl_lahir' => $this->request->getVar('tgllahir'),
+                    'agama' => $this->request->getVar('agama')
+                );
+                $update = $this->model->update("users_detil",$data_detil,$kond);
+                
+            }else{
+                $data_detil = array(
+                    'idusers_detil' => $this->model->autokode("D", "idusers_detil", "users_detil", 2, 7),
+                    'idusers' => $idusers,
+                    'tgl_lahir' => $this->request->getVar('tgllahir'),
+                    'agama' => $this->request->getVar('agama')
+                );
+                $update = $this->model->add("users_detil",$data_detil);
+            }
+            
             if($update == 1){
                 $status = "Profile tersimpan";
             }else{

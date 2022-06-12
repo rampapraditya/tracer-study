@@ -9,8 +9,6 @@
         var nama = document.getElementById('nama').value;
         var tgllahir = document.getElementById('tgllahir').value;
         var agama = document.getElementById('agama').value;
-        var kota = document.getElementById('kota').value;
-        var satker = document.getElementById('satker').value;
         
         if(nrp === ""){
             alert("NRP tidak boleh kosong");
@@ -25,8 +23,6 @@
             form_data.append('nama', nama);
             form_data.append('tgllahir', tgllahir);
             form_data.append('agama', agama);
-            form_data.append('kota', kota);
-            form_data.append('satker', satker);
             
             $.ajax({
                 url: "<?php echo base_url(); ?>/profile/proses",
@@ -66,34 +62,26 @@
                     <div class="forms-sample">
                         <div class="form-group">
                             <label>NRP</label>
-                            <input id="nrp" name="nrp" type="text" class="form-control" autocomplete="off" value="<?php echo $tersimpan->nrp; ?>">
+                            <input id="nrp" name="nrp" type="text" class="form-control" autocomplete="off" value="<?php echo $nrp; ?>">
                         </div>
                         <div class="form-group">
                             <label>NAMA PERSONIL</label>
-                            <input id="nama" name="nama" type="text" class="form-control" autocomplete="off" value="<?php echo $tersimpan->nama; ?>">
+                            <input id="nama" name="nama" type="text" class="form-control" autocomplete="off" value="<?php echo $nama; ?>">
                         </div>
                         <div class="form-group">
                             <label>TANGGAL LAHIR</label>
-                            <input id="tgllahir" name="tgllahir" type="date" class="form-control" autocomplete="off" value="<?php echo $tersimpan->tgl_lahir; ?>">
+                            <input id="tgllahir" name="tgllahir" type="date" class="form-control" autocomplete="off" value="<?php echo $tgl_lahir; ?>">
                         </div>
                         <div class="form-group">
                             <label>AGAMA</label>
                             <select id="agama" name="agama" class="form-control">
                                 <option value="-">- Pilih Agama -</option>
-                                <option <?php if($tersimpan->agama == "Islam"){ echo 'selected'; } ?> value="Islam">Islam</option>
-                                <option <?php if($tersimpan->agama == "Kristen"){ echo 'selected'; } ?> value="Kristen">Kristen</option>
-                                <option <?php if($tersimpan->agama == "Katholik"){ echo 'selected'; } ?> value="Katholik">Katholik</option>
-                                <option <?php if($tersimpan->agama == "Hindu"){ echo 'selected'; } ?> value="Hindu">Hindu</option>
-                                <option <?php if($tersimpan->agama == "Budha"){ echo 'selected'; } ?> value="Budha">Budha</option>
+                                <option <?php if($agama == "Islam"){ echo 'selected'; } ?> value="Islam">Islam</option>
+                                <option <?php if($agama == "Kristen"){ echo 'selected'; } ?> value="Kristen">Kristen</option>
+                                <option <?php if($agama == "Katholik"){ echo 'selected'; } ?> value="Katholik">Katholik</option>
+                                <option <?php if($agama == "Hindu"){ echo 'selected'; } ?> value="Hindu">Hindu</option>
+                                <option <?php if($agama == "Budha"){ echo 'selected'; } ?> value="Budha">Budha</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label>KOTA ASAL</label>
-                            <input type="text" class="form-control" id="kota" name="kota" autocomplete="off" value="<?php echo $tersimpan->kota_asal; ?>">
-                        </div>
-                        <div class="form-group">
-                            <label>SATUAN KERJA</label>
-                            <input type="text" class="form-control" id="satker" name="satker" autocomplete="off" value="<?php echo $tersimpan->satuan_kerja; ?>">
                         </div>
                         <button id="btnSave" class="btn btn-primary" onclick="save()"><i class="mdi mdi-content-save"></i> Simpan </button>
                     </div>

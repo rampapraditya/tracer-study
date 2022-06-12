@@ -1124,6 +1124,146 @@ class Pengguna extends BaseController {
     }
     
     public function ajax_edit_b_daerah() {
+        if(session()->get("logged_in")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->update_b_daerah_file();
+                }
+            }else{
+                $status = $this->update_b_daerah();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function update_b_daerah_file() {
+        // hapus file lama
+        $file_lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$this->request->getVar('kode')."';")->file;
+        $this->modul->hapus_file($file_lawas);
+            
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
         
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
+            if($status_upload){
+                $data = array(
+                    'idusers' => $this->request->getVar('idusers'),
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$fileName
+                );
+                $kond['idb_daerah'] = $this->request->getVar('kode');
+                $update = $this->model->update("b_daerah",$data, $kond);
+                if($update == 1){
+                    $status = "Data terupdate";
+                }else{
+                    $status = "Data gagal terupdate";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function update_b_daerah() {
+        $data = array(
+            'idusers' => $this->request->getVar('idusers'),
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket')
+        );
+        $kond['idb_daerah'] = $this->request->getVar('kode');
+        $update = $this->model->update("b_daerah", $data, $kond);
+        if ($update == 1) {
+            $status = "Data terupdate";
+        } else {
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function hapus_b_daerah() {
+        if(session()->get("logged_in")){
+            $kode = $this->request->uri->getSegment(3);
+            // cek file
+            $file_lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$kode."';")->file;
+            $this->modul->hapus_file($file_lawas);
+            
+            $kond['idb_daerah'] = $kode;
+            $hapus = $this->model->delete("b_daerah",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_r_pangkat() {
+        if(session()->get("logged_in")){
+            $idusers = $this->request->uri->getSegment(3);
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("select idriwayat_pangkat, date_format(tanggal, '%d %M %Y') as tgl, b.nama_pangkat, a.keterangan from riwayat_pangkat a, pangkat b where a.idusers = '".$idusers."' and a.idpangkat = b.idpangkat;");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->tgl;
+                $val[] = $row->nama_pangkat;
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_r_pangkat('."'".$row->idriwayat_pangkat."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_r_pangkat('."'".$row->idriwayat_pangkat."'".','."'".$row->nama_pangkat."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_r_jabatan() {
+        if(session()->get("logged_in")){
+            $idusers = $this->request->uri->getSegment(3);
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("SELECT idr_jab, date_format(tanggal, '%d %M %Y') as tgl, jabatan, keterangan  FROM riwayat_jabatan where idusers = '".$idusers."';");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->tgl;
+                $val[] = $row->jabatan;
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_r_pangkat('."'".$row->idr_jab."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_r_pangkat('."'".$row->idr_jab."'".','."'".$row->jabatan."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
     }
 }

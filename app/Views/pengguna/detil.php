@@ -1,7 +1,7 @@
 <script type="text/javascript">
     
     var save_method = "";
-    var tb_p_umum, tb_p_militer, tb_bahasa_asing, tb_bahasa_daerah;
+    var tb_p_umum, tb_p_militer, tb_bahasa_asing, tb_bahasa_daerah, tb_r_pang, tb_r_jab, tb_t_jasa;
     
     $(document).ready(function () {
         var idusers = document.getElementById('idusers').value;
@@ -33,6 +33,21 @@
             paging : false,
             searching : false
         });
+        
+        tb_r_pang = $('#tb_r_pang').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_pangkat/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false
+        });
+        
+        tb_r_jab = $('#tb_r_jab').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_jabatan/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false
+        });
+        
     });
 
     function load_pend_umum(){
@@ -587,6 +602,34 @@
         });
     }
     
+    function hapus_b_daerah(id, nama){
+        if (confirm("Apakah anda yakin menghapus bahasa daerah " + nama + " ?")) {
+            $.ajax({
+                url: "<?php echo base_url(); ?>/pengguna/hapus_b_daerah/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function (data) {
+                    alert(data.status);
+                    load_bahasa();
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error hapus data');
+                }
+            });
+        }
+    }
+    
+    function r_pangkat(){
+    
+    }
+    
+    function r_jabatan(){
+    
+    }
+    
+    function t_jasa(){
+        
+    }
+    
 </script>
 
 <div class="content-wrapper">
@@ -604,6 +647,9 @@
                             <a class="nav-item nav-link" id="head_nav_p_militer" data-toggle="tab" href="#nav_p_militer" role="tab" aria-controls="nav_p_militer" aria-selected="false">Pendidikan Militer</a>
                             <a class="nav-item nav-link" id="head_nav_b_asing" data-toggle="tab" href="#nav_b_asing" role="tab" aria-controls="nav_b_asing" aria-selected="false">Bahasa Asing</a>
                             <a class="nav-item nav-link" id="head_nav_b_daerah" data-toggle="tab" href="#nav_b_daerah" role="tab" aria-controls="nav_b_daerah" aria-selected="false">Bahasa Daerah</a>
+                            <a class="nav-item nav-link" id="head_nav_r_pang" data-toggle="tab" href="#nav_r_pangkat" role="tab" aria-controls="nav_r_pangkat" aria-selected="false">Riwayat Pangkat</a>
+                            <a class="nav-item nav-link" id="head_nav_r_jab" data-toggle="tab" href="#nav_r_jabatan" role="tab" aria-controls="nav_r_jabatan" aria-selected="false">Riwayat Jabatan</a>
+                            <a class="nav-item nav-link" id="head_nav_t_jasa" data-toggle="tab" href="#nav_t_jasa" role="tab" aria-controls="nav_t_jasa" aria-selected="false">Tanda Jasa</a>
                         </div>
                     </nav>
                     <div class="tab-content" id="nav-tabContent">
@@ -843,6 +889,59 @@
                                         <tbody>
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav_r_pangkat" role="tabpanel" aria-labelledby="nav_r_pangkat">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="r_pangkat()"> Riwayat Pangkat </button>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <table id="tb_r_pang" class="table table-bordered" style="width: 100%; font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>TAHUN</th>
+                                                <th>PANGKAT</th>
+                                                <th>KETERANGAN</th>
+                                                <th style="text-align: center;">AKSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav_r_jabatan" role="tabpanel" aria-labelledby="nav_r_jabatan">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="r_jabatan()"> Riwayat Jabatan </button>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <table id="tb_r_jab" class="table table-bordered" style="width: 100%; font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>TAHUN</th>
+                                                <th>JABATAN</th>
+                                                <th>KETERANGAN</th>
+                                                <th style="text-align: center;">AKSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav_t_jasa" role="tabpanel" aria-labelledby="nav_t_jasa">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="t_jasa()"> Tanda Jasa </button>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
                                 </div>
                             </div>
                         </div>
