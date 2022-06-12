@@ -566,6 +566,27 @@
         }
     }
     
+    function show_b_daerah(id){
+        save_method = 'update';
+        $('#judul_bahasa').html("Ganti Bahasa Daerah");
+        $('#form_bahasa')[0].reset();
+        $('#modal_bahasa').modal('show');
+        document.getElementById('mode_bahasa').value = "daerah";
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/show_b_daerah/" + id,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('[name="kode_bahasa"]').val(data.idb_daerah);
+                $('[name="nm_bahasa"]').val(data.nm_bahasa);
+                $('[name="ket_bahasa"]').val(data.keterangan);
+                
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error get data');
+            }
+        });
+    }
+    
 </script>
 
 <div class="content-wrapper">

@@ -1049,7 +1049,78 @@ class Pengguna extends BaseController {
     }
     
     public function ajax_add_b_daerah() {
+        if(session()->get("logged_in")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_b_daerah_file();
+                }
+            }else{
+                $status = $this->simpan_b_daerah();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_b_daerah_file() {
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
         
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
+            if($status_upload){
+                $data = array(
+                    'idb_daerah' => $this->model->autokode("B","idb_daerah","b_daerah", 2, 7),
+                    'idusers' => $this->request->getVar('idusers'),
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$namaFile
+                );
+                $simpan = $this->model->add("b_daerah",$data);
+                if($simpan == 1){
+                    $status = "Data tersimpan";
+                }else{
+                    $status = "Data gagal tersimpan";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function simpan_b_daerah() {
+        $data = array(
+            'idb_daerah' => $this->model->autokode("B","idb_daerah","b_daerah", 2, 7),
+            'idusers' => $this->request->getVar('idusers'),
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("b_daerah",$data);
+        if($simpan == 1){
+            $status = "Data tersimpan";
+        }else{
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function show_b_daerah() {
+        if(session()->get("logged_in")){
+            $kond['idb_daerah'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("b_daerah", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
     }
     
     public function ajax_edit_b_daerah() {

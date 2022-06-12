@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 12, 2022 at 12:59 AM
+-- Generation Time: Jun 12, 2022 at 03:31 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -54,6 +54,14 @@ CREATE TABLE IF NOT EXISTS `b_daerah` (
   PRIMARY KEY (`idb_daerah`),
   KEY `FK_b_daerah_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `b_daerah`
+--
+
+INSERT INTO `b_daerah` (`idb_daerah`, `idusers`, `nm_bahasa`, `keterangan`, `file`) VALUES
+('B00001', 'U00002', 'Jawa', 'bahsa jawa', 'U00002/1655004399_d2f4959397b6a8c467b6.png'),
+('B00002', 'U00002', 'Kromo', 'bahasa krowmo', '');
 
 -- --------------------------------------------------------
 
@@ -278,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `idrole`, `idkorps`, `idpangkat`, `foto`) VALUES
-('U00001', 'ADMIN', 'aGtq', 'ADMIN', 'R00001', 'K00000', 'P00001', 'U00002/atika.png'),
+('U00001', 'ADMIN', 'aGtq', 'ADMIN', 'R00001', 'K00000', 'P00001', 'U00001/foto.jpeg'),
 ('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013', 'U00002/atika.png');
 
 -- --------------------------------------------------------
