@@ -1,7 +1,7 @@
 <script type="text/javascript">
     
     var save_method = "";
-    var tb_p_umum, tb_p_militer;
+    var tb_p_umum, tb_p_militer, tb_bahasa;
     
     $(document).ready(function () {
         tb_p_umum = $('#tb_p_umum').DataTable({
