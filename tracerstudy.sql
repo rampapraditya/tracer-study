@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 03, 2022 at 08:34 AM
+-- Generation Time: Jun 12, 2022 at 12:59 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -20,6 +20,40 @@ SET time_zone = "+00:00";
 --
 -- Database: `tracerstudy`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `b_asing`
+--
+
+DROP TABLE IF EXISTS `b_asing`;
+CREATE TABLE IF NOT EXISTS `b_asing` (
+  `idb_asing` varchar(6) NOT NULL,
+  `idusers` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+  `nm_bahasa` varchar(45) NOT NULL,
+  `keterangan` varchar(150) DEFAULT NULL,
+  `file` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`idb_asing`),
+  KEY `FK_b_asing_users` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `b_daerah`
+--
+
+DROP TABLE IF EXISTS `b_daerah`;
+CREATE TABLE IF NOT EXISTS `b_daerah` (
+  `idb_daerah` varchar(6) NOT NULL,
+  `idusers` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+  `nm_bahasa` varchar(45) NOT NULL,
+  `keterangan` varchar(150) DEFAULT NULL,
+  `file` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`idb_daerah`),
+  KEY `FK_b_daerah_users` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -283,6 +317,18 @@ INSERT INTO `users_detil` (`idusers_detil`, `idusers`, `ms_dinas_pngkt`, `tmt_tn
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `b_asing`
+--
+ALTER TABLE `b_asing`
+  ADD CONSTRAINT `FK_b_asing_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `b_daerah`
+--
+ALTER TABLE `b_daerah`
+  ADD CONSTRAINT `FK_b_daerah_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `pend_militer`

@@ -210,7 +210,14 @@ class Pengguna extends BaseController {
 
                 $personil = $this->model->getAllQR("select * from users where idusers = '" . $idusers . "';");
                 $data['pers_head'] = $personil;
-                $data['foto_personil'] = $def_foto;
+                // ini untuk bagian dalam
+                $foto_personil = base_url() . '/images/noimg.jpg';
+                if (strlen($personil->foto) > 0) {
+                    if (file_exists(ROOTPATH . 'public/uploads/' . $personil->foto)) {
+                        $foto_personil = base_url() . '/uploads/' . $personil->foto;
+                    }
+                }
+                $data['foto_personil'] = $foto_personil;
 
                 // detil personil
                 $cek_detil = $this->model->getAllQR("SELECT count(*) as jml FROM users_detil where idusers = '" . $idusers . "';")->jml;
@@ -348,7 +355,8 @@ class Pengguna extends BaseController {
                     $data = array(
                         'foto' => $idusers.'/'.$info_file['name']
                     );
-                    $update = $this->model->updateNK("users", $data);
+                    $kond['idusers'] = $idusers;
+                    $update = $this->model->update("users", $data, $kond);
                     if ($update == 1) {
                         $status = "Foto profile terupload";
                     } else {
@@ -800,6 +808,58 @@ class Pengguna extends BaseController {
                 $status = "Data gagal terhapus";
             }
             echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_b_asing() {
+        if(session()->get("logged_in")){
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAll("b_asing");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nm_bahasa;
+                $val[] = $row->keterangan;
+                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_militer('."'".$row->idb_asing."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_militer('."'".$row->idb_asing."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_b_daerah() {
+        if(session()->get("logged_in")){
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAll("b_daerah");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nm_bahasa;
+                $val[] = $row->keterangan;
+                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_militer('."'".$row->idb_daerah."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_militer('."'".$row->idb_daerah."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
         }else{
             $this->modul->halaman('login');
         }

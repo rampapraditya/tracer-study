@@ -1,7 +1,7 @@
 <script type="text/javascript">
     
     var save_method = "";
-    var tb_p_umum, tb_p_militer, tb_bahasa;
+    var tb_p_umum, tb_p_militer, tb_bahasa_asing, tb_bahasa_daerah;
     
     $(document).ready(function () {
         tb_p_umum = $('#tb_p_umum').DataTable({
@@ -13,6 +13,20 @@
         
         tb_p_militer = $('#tb_p_militer').DataTable({
             ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
+            ordering : false,
+            paging : false,
+            searching : false
+        });
+        
+        tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing",
+            ordering : false,
+            paging : false,
+            searching : false
+        });
+        
+        tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah",
             ordering : false,
             paging : false,
             searching : false
@@ -48,6 +62,41 @@
         tb_p_militer.destroy();
         tb_p_militer = $('#tb_p_militer').DataTable({
             ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+    }
+    
+    function load_bahasa(){
+        tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        tb_bahasa_asing.destroy();
+        tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        
+        
+        tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah",
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        tb_bahasa_daerah.destroy();
+        tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah",
             ordering : false,
             paging : false,
             searching : false,
@@ -391,6 +440,89 @@
         }
     }
     
+    function b_asing(){
+        save_method = "add";
+        document.getElementById('mode_bahasa').value = "asing";
+        $('#judul_bahasa').html("Tambah Bahasa Asing");
+        $('#form_bahasa')[0].reset();
+        $('#modal_bahasa').modal('show');
+    }
+    
+    function b_daerah(){
+        save_method = "add";
+        document.getElementById('mode_bahasa').value = "daerah";
+        $('#judul_bahasa').html("Tambah Bahasa Daerah");
+        $('#form_bahasa')[0].reset();
+        $('#modal_bahasa').modal('show');
+    }
+    
+    function closemodal_bahasa(){
+        $('#modal_bahasa').modal('hide');
+    }
+    
+    function save_bahasa(){
+        var kode = document.getElementById('kode_bahasa').value;
+        var idusers = document.getElementById('idusers').value;
+        var nama = document.getElementById('nm_bahasa').value;
+        var ket = document.getElementById('ket_bahasa').value;
+        var file = $('#file_bahasa').prop('files')[0];
+        var mode = document.getElementById('mode_bahasa').value;
+
+        if (idusers === "") {
+            alert("ID users tidak boleh kosong");
+        }else if(nama === ""){
+            alert("Nama bahasa tidak boleh kosong");
+        } else {
+            $('#btnSaveBahasa').text('Saving...'); 
+            $('#btnSaveBahasa').attr('disabled', true);
+
+            var form_data = new FormData();
+            form_data.append('kode', kode);
+            form_data.append('idusers', idusers);
+            form_data.append('nama', nama);
+            form_data.append('tahun', tahun);
+            form_data.append('ket', ket);
+            form_data.append('file', file);
+            
+            var url = "";
+            if ( (save_method === "add") && (mode === "umum")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_pend_umum";
+            } else if ((save_method === "update") && (mode === "umum")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_umum";
+            } else if ((save_method === "add") && (mode === "militer")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_pend_militer";
+            } else if ((save_method === "update") && (mode === "militer")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_militer";
+            }
+            
+            $.ajax({
+                url: url,
+                dataType: 'JSON',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'POST',
+                success: function (response) {
+                    alert(response.status);
+                    
+                    $('#modal_pendidikan').modal('hide');
+                    load_pend_umum();
+                    load_pend_militer();
+                    
+                    $('#btnSaveBahasa').text('Save'); 
+                    $('#btnSaveBahasa').attr('disabled', false);
+                    
+                }, error: function (response) {
+                    alert(response.status);
+
+                    $('#btnSaveBahasa').text('Save');
+                    $('#btnSaveBahasa').attr('disabled', false);
+                }
+            });
+        }
+    }
+    
 </script>
 
 <div class="content-wrapper">
@@ -407,6 +539,7 @@
                             <a class="nav-item nav-link" id="head_nav_p_umum" data-toggle="tab" href="#nav_p_umum" role="tab" aria-controls="nav_p_umum" aria-selected="false">Pendidikan Umum</a>
                             <a class="nav-item nav-link" id="head_nav_p_militer" data-toggle="tab" href="#nav_p_militer" role="tab" aria-controls="nav_p_militer" aria-selected="false">Pendidikan Militer</a>
                             <a class="nav-item nav-link" id="head_nav_b_asing" data-toggle="tab" href="#nav_b_asing" role="tab" aria-controls="nav_b_asing" aria-selected="false">Bahasa Asing</a>
+                            <a class="nav-item nav-link" id="head_nav_b_daerah" data-toggle="tab" href="#nav_b_daerah" role="tab" aria-controls="nav_b_daerah" aria-selected="false">Bahasa Daerah</a>
                         </div>
                     </nav>
                     <div class="tab-content" id="nav-tabContent">
@@ -606,7 +739,48 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav_b_asing" role="tabpanel" aria-labelledby="nav_b_asing">
-
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="b_asing()"> Bahasa Asing </button>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <table id="tb_bahasa_asing" class="table table-bordered" style="width: 100%; font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>NAMA BAHASA</th>
+                                                <th>KETERANGAN</th>
+                                                <th>FILE</th>
+                                                <th style="text-align: center;">AKSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav_b_daerah" role="tabpanel" aria-labelledby="nav_b_daerah">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="b_daerah()"> Bahasa Daerah </button>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <table id="tb_bahasa_daerah" class="table table-bordered" style="width: 100%; font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>NAMA BAHASA</th>
+                                                <th>KETERANGAN</th>
+                                                <th>FILE</th>
+                                                <th style="text-align: center;">AKSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -706,6 +880,48 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary btn-xs" onclick="unduh()">Download</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_bahasa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="judul_bahasa">Bahasa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_bahasa();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_bahasa" class="form-horizontal">
+                    <input type="hidden" id="kode_bahasa" name="kode_bahasa">
+                    <input type="hidden" id="mode_bahasa" name="mode_bahasa">
+                    
+                    <div class="form-group row">
+                        <label for="nm_bahasa" class="col-sm-3 col-form-label">BAHASA</label>
+                        <div class="col-sm-9">
+                            <input id="nm_bahasa" name="nm_bahasa" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="file_bahasa" class="col-sm-3 col-form-label">File</label>
+                        <div class="col-sm-9">
+                            <input id="file_bahasa" name="file_bahasa" class="form-control" type="file" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="ket_bahasa" class="col-sm-3 col-form-label">KETERANGAN</label>
+                        <div class="col-sm-9">
+                            <input id="ket_bahasa" name="ket_bahasa" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSaveBahasa" type="button" class="btn btn-primary btn-xs" onclick="save_bahasa();">Save</button>
+                <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_bahasa();">Close</button>
             </div>
         </div>
     </div>
