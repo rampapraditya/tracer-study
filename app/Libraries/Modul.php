@@ -429,6 +429,10 @@ class Modul {
         return base_url().'/uploads/';
     }
     
+    public function pathExits() {
+        return ROOTPATH.'public/uploads/';
+    }
+    
     public function hapus_file($path_file) {
         if(strlen($path_file)){
             if(file_exists('./uploads/'.$path_file)){

@@ -4,29 +4,31 @@
     var tb_p_umum, tb_p_militer, tb_bahasa_asing, tb_bahasa_daerah;
     
     $(document).ready(function () {
+        var idusers = document.getElementById('idusers').value;
+        
         tb_p_umum = $('#tb_p_umum').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum/" + idusers,
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_p_militer = $('#tb_p_militer').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer/" + idusers,
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing/" + idusers,
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah/" + idusers,
             ordering : false,
             paging : false,
             searching : false
@@ -34,8 +36,10 @@
     });
 
     function load_pend_umum(){
+        var idusers = document.getElementById('idusers').value;
+        
         tb_p_umum = $('#tb_p_umum').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -43,7 +47,7 @@
         });
         tb_p_umum.destroy();
         tb_p_umum = $('#tb_p_umum').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_umum/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -52,8 +56,10 @@
     }
     
     function load_pend_militer(){
+        var idusers = document.getElementById('idusers').value;
+        
         tb_p_militer = $('#tb_p_militer').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -61,7 +67,7 @@
         });
         tb_p_militer.destroy();
         tb_p_militer = $('#tb_p_militer').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_p_militer/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -70,8 +76,10 @@
     }
     
     function load_bahasa(){
+        var idusers = document.getElementById('idusers').value;
+        
         tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -79,7 +87,7 @@
         });
         tb_bahasa_asing.destroy();
         tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_asing/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -88,7 +96,7 @@
         
         
         tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -96,7 +104,7 @@
         });
         tb_bahasa_daerah.destroy();
         tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
-            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah",
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_b_daerah/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -480,19 +488,18 @@
             form_data.append('kode', kode);
             form_data.append('idusers', idusers);
             form_data.append('nama', nama);
-            form_data.append('tahun', tahun);
             form_data.append('ket', ket);
             form_data.append('file', file);
             
             var url = "";
-            if ( (save_method === "add") && (mode === "umum")) {
-                url = "<?php echo base_url(); ?>/pengguna/ajax_add_pend_umum";
-            } else if ((save_method === "update") && (mode === "umum")) {
-                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_umum";
-            } else if ((save_method === "add") && (mode === "militer")) {
-                url = "<?php echo base_url(); ?>/pengguna/ajax_add_pend_militer";
-            } else if ((save_method === "update") && (mode === "militer")) {
-                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_pend_militer";
+            if ( (save_method === "add") && (mode === "asing")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_b_asing";
+            } else if ((save_method === "update") && (mode === "asing")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_b_asing";
+            } else if ((save_method === "add") && (mode === "daerah")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_b_daerah";
+            } else if ((save_method === "update") && (mode === "daerah")) {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_b_daerah";
             }
             
             $.ajax({
@@ -506,9 +513,8 @@
                 success: function (response) {
                     alert(response.status);
                     
-                    $('#modal_pendidikan').modal('hide');
-                    load_pend_umum();
-                    load_pend_militer();
+                    $('#modal_bahasa').modal('hide');
+                    load_bahasa();
                     
                     $('#btnSaveBahasa').text('Save'); 
                     $('#btnSaveBahasa').attr('disabled', false);
@@ -518,6 +524,43 @@
 
                     $('#btnSaveBahasa').text('Save');
                     $('#btnSaveBahasa').attr('disabled', false);
+                }
+            });
+        }
+    }
+    
+    function show_b_asing(id){
+        save_method = 'update';
+        $('#judul_bahasa').html("Ganti Bahasa Asing");
+        $('#form_bahasa')[0].reset();
+        $('#modal_bahasa').modal('show');
+        document.getElementById('mode_bahasa').value = "asing";
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/show_b_asing/" + id,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('[name="kode_bahasa"]').val(data.idb_asing);
+                $('[name="nm_bahasa"]').val(data.nm_bahasa);
+                $('[name="ket_bahasa"]').val(data.keterangan);
+                
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error get data');
+            }
+        });
+    }
+    
+    function hapus_b_asing(id, nama){
+        if (confirm("Apakah anda yakin menghapus bahasa asing " + nama + " ?")) {
+            $.ajax({
+                url: "<?php echo base_url(); ?>/pengguna/hapus_b_asing/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function (data) {
+                    alert(data.status);
+                    load_bahasa();
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error hapus data');
                 }
             });
         }
@@ -906,7 +949,7 @@
                         </div>
                     </div>
                     <div class="form-group row" style="margin-top: -12px;">
-                        <label for="file_bahasa" class="col-sm-3 col-form-label">File</label>
+                        <label for="file_bahasa" class="col-sm-3 col-form-label">FILE</label>
                         <div class="col-sm-9">
                             <input id="file_bahasa" name="file_bahasa" class="form-control" type="file" autocomplete="off">
                         </div>

@@ -390,9 +390,11 @@ class Pengguna extends BaseController {
     
     public function ajaxlist_p_umum() {
         if(session()->get("logged_in")){
+            $idusers = $this->request->uri->getSegment(3);
+            // load data
             $data = array();
             $no = 1;
-            $list = $this->model->getAll("pend_umum");
+            $list = $this->model->getAllQ("select * from pend_umum where idusers = '".$idusers."';");
             foreach ($list->getResult() as $row) {
                 $val = array();
                 $val[] = $no;
@@ -594,9 +596,11 @@ class Pengguna extends BaseController {
     
     public function ajaxlist_p_militer() {
         if(session()->get("logged_in")){
+            $idusers = $this->request->uri->getSegment(3);
+            // load data
             $data = array();
             $no = 1;
-            $list = $this->model->getAll("pend_militer");
+            $list = $this->model->getAllQ("select * from pend_militer where idusers = '".$idusers."';");
             foreach ($list->getResult() as $row) {
                 $val = array();
                 $val[] = $no;
@@ -815,18 +819,26 @@ class Pengguna extends BaseController {
     
     public function ajaxlist_b_asing() {
         if(session()->get("logged_in")){
+            $idusers = $this->request->uri->getSegment(3);
+            // load data
             $data = array();
             $no = 1;
-            $list = $this->model->getAll("b_asing");
+            $list = $this->model->getAllQ("select * from b_asing where idusers = '".$idusers."';");
             foreach ($list->getResult() as $row) {
                 $val = array();
                 $val[] = $no;
                 $val[] = $row->nm_bahasa;
                 $val[] = $row->keterangan;
-                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $path = "";
+                if(strlen($row->file) > 0){
+                    if(file_exists($this->modul->pathExits().$row->file)){
+                        $path = $this->modul->getPublicPath().$row->file;
+                    }
+                }
+                $val[] = '<img src="'.$path.'" style="width: 100px; height: auto;" class="img-thumbnail">';
                 $val[] = '<div style="text-align: center;">'
-                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_militer('."'".$row->idb_asing."'".')">Ganti</button>&nbsp;'
-                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_militer('."'".$row->idb_asing."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_b_asing('."'".$row->idb_asing."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_b_asing('."'".$row->idb_asing."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
                         . '</div>';
                 $data[] = $val;
                 
@@ -841,18 +853,26 @@ class Pengguna extends BaseController {
     
     public function ajaxlist_b_daerah() {
         if(session()->get("logged_in")){
+            $idusers = $this->request->uri->getSegment(3);
+            // load data
             $data = array();
             $no = 1;
-            $list = $this->model->getAll("b_daerah");
+            $list = $this->model->getAllQ("select * from b_daerah where idusers = '".$idusers."';");
             foreach ($list->getResult() as $row) {
                 $val = array();
                 $val[] = $no;
                 $val[] = $row->nm_bahasa;
                 $val[] = $row->keterangan;
-                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $path = "";
+                if(strlen($row->file) > 0){
+                    if(file_exists($this->modul->pathExits().$row->file)){
+                        $path = $this->modul->getPublicPath().$row->file;
+                    }
+                }
+                $val[] = '<img src="'.$path.'" style="width: 100px; height: auto;" class="img-thumbnail">';
                 $val[] = '<div style="text-align: center;">'
-                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_militer('."'".$row->idb_daerah."'".')">Ganti</button>&nbsp;'
-                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_militer('."'".$row->idb_daerah."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_b_daerah('."'".$row->idb_daerah."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_b_daerah('."'".$row->idb_daerah."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
                         . '</div>';
                 $data[] = $val;
                 
@@ -863,5 +883,176 @@ class Pengguna extends BaseController {
         }else{
             $this->modul->halaman('login');
         }
+    }
+    
+    public function ajax_add_b_asing() {
+        if(session()->get("logged_in")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_b_asing_file();
+                }
+            }else{
+                $status = $this->simpan_b_asing();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_b_asing_file() {
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
+            if($status_upload){
+                $data = array(
+                    'idb_asing' => $this->model->autokode("B","idb_asing","b_asing", 2, 7),
+                    'idusers' => $this->request->getVar('idusers'),
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$namaFile
+                );
+                $simpan = $this->model->add("b_asing",$data);
+                if($simpan == 1){
+                    $status = "Data tersimpan";
+                }else{
+                    $status = "Data gagal tersimpan";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function simpan_b_asing() {
+        $data = array(
+            'idb_asing' => $this->model->autokode("B","idb_asing","b_asing", 2, 7),
+            'idusers' => $this->request->getVar('idusers'),
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("b_asing",$data);
+        if($simpan == 1){
+            $status = "Data tersimpan";
+        }else{
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function show_b_asing() {
+        if(session()->get("logged_in")){
+            $kondisi['idb_asing'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("b_asing", $kondisi);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_b_asing() {
+        if(session()->get("logged_in")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->update_b_asing_file();
+                }
+            }else{
+                $status = $this->update_b_asing();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function update_b_asing_file() {
+        // hapus file lama
+        $file_lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$this->request->getVar('kode')."';")->file;
+        $this->modul->hapus_file($file_lawas);
+            
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
+            if($status_upload){
+                $data = array(
+                    'idusers' => $this->request->getVar('idusers'),
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$fileName
+                );
+                $kond['idb_asing'] = $this->request->getVar('kode');
+                $update = $this->model->update("b_asing",$data, $kond);
+                if($update == 1){
+                    $status = "Data terupdate";
+                }else{
+                    $status = "Data gagal terupdate";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function update_b_asing() {
+        $data = array(
+            'idusers' => $this->request->getVar('idusers'),
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket')
+        );
+        $kond['idb_asing'] = $this->request->getVar('kode');
+        $update = $this->model->update("b_asing", $data, $kond);
+        if ($update == 1) {
+            $status = "Data terupdate";
+        } else {
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function hapus_b_asing() {
+        if(session()->get("logged_in")){
+            $kode = $this->request->uri->getSegment(3);
+            // cek file
+            $file_lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$kode."';")->file;
+            $this->modul->hapus_file($file_lawas);
+            
+            $kond['idb_asing'] = $kode;
+            $hapus = $this->model->delete("b_asing",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_b_daerah() {
+        
+    }
+    
+    public function ajax_edit_b_daerah() {
+        
     }
 }
