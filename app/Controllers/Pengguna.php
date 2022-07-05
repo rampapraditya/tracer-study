@@ -31,8 +31,8 @@ class Pengguna extends BaseController {
             $def_foto = base_url() . '/images/noimg.jpg';
             $foto = $this->model->getAllQR("select foto from users where idusers = '" . session()->get("username") . "';")->foto;
             if (strlen($foto) > 0) {
-                if (file_exists(ROOTPATH . 'public/uploads/' . $foto)) {
-                    $def_foto = base_url() . '/uploads/' . $foto;
+                if (file_exists($this->modul->getPathApp().$foto)) {
+                    $def_foto = base_url().'/uploads/'.$foto;
                 }
             }
             $data['foto_profile'] = $def_foto;
@@ -41,8 +41,8 @@ class Pengguna extends BaseController {
             $def_logo = base_url() . '/images/noimg.jpg';
             $logo = $this->model->getAllQR("select logo from identitas;")->logo;
             if (strlen($logo) > 0) {
-                if (file_exists(ROOTPATH . 'public/uploads/' . $logo)) {
-                    $def_logo = base_url() . '/uploads/' . $logo;
+                if (file_exists($this->modul->getPathApp(). $logo)) {
+                    $def_logo = base_url().'/uploads/'.$logo;
                 }
             }
             $data['logo'] = $def_logo;
@@ -184,18 +184,18 @@ class Pengguna extends BaseController {
             $def_foto = base_url() . '/images/noimg.jpg';
             $foto = $this->model->getAllQR("select foto from users where idusers = '" . session()->get("username") . "';")->foto;
             if (strlen($foto) > 0) {
-                if (file_exists(ROOTPATH . 'public/uploads/' . $foto)) {
-                    $def_foto = base_url() . '/uploads/' . $foto;
+                if (file_exists($this->modul->getPathApp().$foto)) {
+                    $def_foto = base_url().'/uploads/'.$foto;
                 }
             }
             $data['foto_profile'] = $def_foto;
 
             // membaca logo
-            $def_logo = base_url() . '/images/noimg.jpg';
+            $def_logo = base_url().'/images/noimg.jpg';
             $logo = $this->model->getAllQR("select logo from identitas;")->logo;
             if (strlen($logo) > 0) {
-                if (file_exists(ROOTPATH . 'public/uploads/' . $logo)) {
-                    $def_logo = base_url() . '/uploads/' . $logo;
+                if (file_exists($this->modul->getPathApp(). $logo)) {
+                    $def_logo = base_url().'/uploads/'.$logo;
                 }
             }
             $data['logo'] = $def_logo;
@@ -211,10 +211,10 @@ class Pengguna extends BaseController {
                 $personil = $this->model->getAllQR("select * from users where idusers = '" . $idusers . "';");
                 $data['pers_head'] = $personil;
                 // ini untuk bagian dalam
-                $foto_personil = base_url() . '/images/noimg.jpg';
+                $foto_personil = base_url().'/images/noimg.jpg';
                 if (strlen($personil->foto) > 0) {
-                    if (file_exists(ROOTPATH . 'public/uploads/' . $personil->foto)) {
-                        $foto_personil = base_url() . '/uploads/' . $personil->foto;
+                    if (file_exists($this->modul->getPathApp().$personil->foto)) {
+                        $foto_personil = base_url().'/uploads/'.$personil->foto;
                     }
                 }
                 $data['foto_personil'] = $foto_personil;
@@ -332,28 +332,29 @@ class Pengguna extends BaseController {
             $idusers = $this->request->getVar('idusers');
             
             // membuat folder berdasarkan idusers
-            if($this->modul->folder_exist(ROOTPATH . 'public/uploads/' . $idusers)){
-                $this->modul->buat_folder(ROOTPATH . 'public/uploads/' . $idusers);
+            if($this->modul->folder_exist($this->modul->getPathApp().$idusers)){
+                $this->modul->buat_folder($this->modul->getPathApp().$idusers);
             }
             
             $logo = $this->model->getAllQR("select foto from users where idusers = '".$idusers."';")->foto;
             if (strlen($logo) > 0) {
-                if (file_exists(ROOTPATH . 'public/uploads/'.$logo)) {
-                    unlink(ROOTPATH . 'public/uploads/'.$logo);
+                if (file_exists($this->modul->getPathApp().$logo)) {
+                    unlink($this->modul->getPathApp().$logo);
                 }
             }
 
             $file = $this->request->getFile('file');
+            $namaFile = $file->getRandomName();
             $info_file = $this->modul->info_file($file);
 
             // cek nama file ada apa tidak
-            if (file_exists(ROOTPATH . 'public/uploads/'.$idusers.'/'. $info_file['name'])) {
+            if (file_exists($this->modul->getPathApp().$idusers.'/'.$namaFile)) {
                 $status = "Gunakan nama file lain";
             } else {
-                $status_upload = $file->move(ROOTPATH . 'public/uploads/' . $idusers);
+                $status_upload = $file->move($this->modul->getPathApp().$idusers, $namaFile);
                 if ($status_upload) {
                     $data = array(
-                        'foto' => $idusers.'/'.$info_file['name']
+                        'foto' => $idusers.'/'.$namaFile
                     );
                     $kond['idusers'] = $idusers;
                     $update = $this->model->update("users", $data, $kond);
@@ -375,11 +376,11 @@ class Pengguna extends BaseController {
     public function load_foto() {
         if (session()->get("logged_in")) {
             $idusers = $this->request->uri->getSegment(3);
-            $def_foto = base_url() . '/images/noimg.jpg';
+            $def_foto = base_url().'/images/noimg.jpg';
             $foto = $this->model->getAllQR("select foto from users where idusers = '".$idusers."';")->foto;           
             if (strlen($foto) > 0) {
-                if (file_exists(ROOTPATH . 'public/uploads/' . $foto)) {
-                    $def_foto = base_url() . '/uploads/' . $foto;
+                if (file_exists($this->modul->getPathApp().$foto)) {
+                    $def_foto = base_url().'/uploads/'.$foto;
                 }
             }
             echo json_encode(array("foto" => $def_foto));
@@ -400,7 +401,7 @@ class Pengguna extends BaseController {
                 $val[] = $no;
                 $val[] = $row->nm_pendidikan;
                 $val[] = $row->tahun;
-                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idpendidikan."'".','."'umum'".')">';
+                $val[] = '<img src="'. base_url().'/'.$this->modul->getPathApp().$row->file.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idpendidikan."'".','."'umum'".')">';
                 $val[] = $row->keterangan;
                 $val[] = '<div style="text-align: center;">'
                         . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_umum('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
@@ -440,10 +441,10 @@ class Pengguna extends BaseController {
         $namaFile = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
             if($status_upload){
                 $data = array(
                     'idpendidikan' => $this->model->autokode("U","idpendidikan","pend_umum", 2, 7),
@@ -522,19 +523,23 @@ class Pengguna extends BaseController {
     }
     
     private function update_pend_umum_file() {
-        // hapus file lama
-        $file_lawas = $this->model->getAllQR("SELECT file FROM pend_umum where idpendidikan = '".$this->request->getVar('kode')."';")->file;
-        $this->modul->hapus_file($file_lawas);
-            
         $nm_folder = $this->request->getVar('idusers');
+        // hapus file lama
+        $lawas = $this->model->getAllQR("SELECT file FROM pend_umum where idpendidikan = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas)){
+                unlink($this->modul->getPathApp().$lawas);
+            }
+        }
+        
         $file = $this->request->getFile('file');
         $fileName = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
             if($status_upload){
                 $data = array(
                     'idusers' => $this->request->getVar('idusers'),
@@ -578,8 +583,13 @@ class Pengguna extends BaseController {
         if(session()->get("logged_in")){
             $idpendidikan = $this->request->uri->getSegment(3);
             // cek file
-            $file_lawas = $this->model->getAllQR("SELECT file FROM pend_umum where idpendidikan = '".$idpendidikan."';")->file;
-            $this->modul->hapus_file($file_lawas);
+            $lawas = $this->model->getAllQR("SELECT file FROM pend_umum where idpendidikan = '".$idpendidikan."';");
+            if(strlen($lawas->file) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas->file)){
+                    unlink($this->modul->getPathApp().$lawas->file);
+                }
+            }
+            
             
             $kond['idpendidikan'] = $idpendidikan;
             $hapus = $this->model->delete("pend_umum",$kond);
@@ -606,7 +616,7 @@ class Pengguna extends BaseController {
                 $val[] = $no;
                 $val[] = $row->nm_pendidikan;
                 $val[] = $row->tahun;
-                $val[] = '<img src="'.$this->modul->getPublicPath().$row->file.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $val[] = '<img src="'.base_url().'/'.$this->modul->getPathApp().$row->file.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idpendidikan."'".','."'militer'".')">';
                 $val[] = $row->keterangan;
                 $val[] = '<div style="text-align: center;">'
                         . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_militer('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
@@ -632,11 +642,13 @@ class Pengguna extends BaseController {
                 $foto = $this->model->getAllQR("select file from pend_umum where idpendidikan = '".$kode."';")->file;
             }else if($mode == "militer"){
                 $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "basing"){
+                $foto = $this->model->getAllQR("select file from b_asing where idb_asing = '".$kode."';")->file;
             }
             
             if (strlen($foto) > 0) {
-                if (file_exists(ROOTPATH . 'public/uploads/' . $foto)) {
-                    $def_foto = base_url() . '/uploads/' . $foto;
+                if (file_exists($this->modul->getPathApp().$foto)) {
+                    $def_foto = base_url().'/uploads/'.$foto;
                 }
             }
             echo json_encode(array("foto" => $def_foto));
@@ -653,6 +665,8 @@ class Pengguna extends BaseController {
                 $foto = $this->model->getAllQR("select file from pend_umum where idpendidikan = '".$kode."';")->file;
             }else if($mode == "militer"){
                 $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "basing"){
+                $foto = $this->model->getAllQR("select file from b_asing where idb_asing = '".$kode."';")->file;
             }
             return $this->response->download('uploads/' . $foto, null);
         }else {
@@ -683,10 +697,10 @@ class Pengguna extends BaseController {
         $namaFile = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
             if($status_upload){
                 $data = array(
                     'idpendidikan' => $this->model->autokode("M","idpendidikan","pend_militer", 2, 7),
@@ -746,18 +760,22 @@ class Pengguna extends BaseController {
     
     private function update_pend_militer_file() {
         // hapus file lama
-        $file_lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$this->request->getVar('kode')."';")->file;
-        $this->modul->hapus_file($file_lawas);
+        $lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas->file) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas->file)){
+                unlink($this->modul->getPathApp().$lawas->file);
+            }
+        }
             
         $nm_folder = $this->request->getVar('idusers');
         $file = $this->request->getFile('file');
         $fileName = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
             if($status_upload){
                 $data = array(
                     'idusers' => $this->request->getVar('idusers'),
@@ -801,8 +819,12 @@ class Pengguna extends BaseController {
         if(session()->get("logged_in")){
             $idpendidikan = $this->request->uri->getSegment(3);
             // cek file
-            $file_lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$idpendidikan."';")->file;
-            $this->modul->hapus_file($file_lawas);
+            $lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$idpendidikan."';")->file;
+            if(strlen($lawas) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas)){
+                    unlink($this->modul->getPathApp().$lawas);
+                }
+            }
             
             $kond['idpendidikan'] = $idpendidikan;
             $hapus = $this->model->delete("pend_militer",$kond);
@@ -829,13 +851,13 @@ class Pengguna extends BaseController {
                 $val[] = $no;
                 $val[] = $row->nm_bahasa;
                 $val[] = $row->keterangan;
-                $path = "";
+                $path = base_url().'/images/noimg.jpg';
                 if(strlen($row->file) > 0){
-                    if(file_exists($this->modul->pathExits().$row->file)){
-                        $path = $this->modul->getPublicPath().$row->file;
+                    if(file_exists($this->modul->getPathApp().$row->file)){
+                        $path = base_url().'/'.$this->modul->getPathApp().$row->file;
                     }
                 }
-                $val[] = '<img src="'.$path.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $val[] = '<img src="'.$path.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idb_asing."'".','."'basing'".')">';
                 $val[] = '<div style="text-align: center;">'
                         . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_b_asing('."'".$row->idb_asing."'".')">Ganti</button>&nbsp;'
                         . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_b_asing('."'".$row->idb_asing."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
@@ -863,10 +885,10 @@ class Pengguna extends BaseController {
                 $val[] = $no;
                 $val[] = $row->nm_bahasa;
                 $val[] = $row->keterangan;
-                $path = "";
+                $path = base_url().'/images/noimg/jpg';
                 if(strlen($row->file) > 0){
-                    if(file_exists($this->modul->pathExits().$row->file)){
-                        $path = $this->modul->getPublicPath().$row->file;
+                    if(file_exists($this->modul->getPathApp().$row->file)){
+                        $path = $this->modul->getPathApp().$row->file;
                     }
                 }
                 $val[] = '<img src="'.$path.'" style="width: 100px; height: auto;" class="img-thumbnail">';
@@ -908,10 +930,10 @@ class Pengguna extends BaseController {
         $namaFile = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
             if($status_upload){
                 $data = array(
                     'idb_asing' => $this->model->autokode("B","idb_asing","b_asing", 2, 7),
@@ -979,18 +1001,22 @@ class Pengguna extends BaseController {
     
     private function update_b_asing_file() {
         // hapus file lama
-        $file_lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$this->request->getVar('kode')."';")->file;
-        $this->modul->hapus_file($file_lawas);
+        $lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas)){
+                unlink($this->modul->getPathApp().$lawas);
+            }
+        }
             
         $nm_folder = $this->request->getVar('idusers');
         $file = $this->request->getFile('file');
         $fileName = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
             if($status_upload){
                 $data = array(
                     'idusers' => $this->request->getVar('idusers'),
@@ -1032,8 +1058,12 @@ class Pengguna extends BaseController {
         if(session()->get("logged_in")){
             $kode = $this->request->uri->getSegment(3);
             // cek file
-            $file_lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$kode."';")->file;
-            $this->modul->hapus_file($file_lawas);
+            $lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$kode."';")->file;
+            if(strlen($lawas) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas)){
+                    unlink($this->modul->getPathApp().$lawas);
+                }
+            }
             
             $kond['idb_asing'] = $kode;
             $hapus = $this->model->delete("b_asing",$kond);

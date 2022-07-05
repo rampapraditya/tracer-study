@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>TRACER STUDY</title>
+        <title>SI PERS</title>
         <link rel="stylesheet" href="<?php echo base_url(); ?>/vendors/feather/feather.css">
         <link rel="stylesheet" href="<?php echo base_url(); ?>/vendors/ti-icons/css/themify-icons.css">
         <link rel="stylesheet" href="<?php echo base_url(); ?>/vendors/css/vendor.bundle.base.css">
@@ -142,7 +142,7 @@
             <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
                 <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
                     <a class="navbar-brand brand-logo mr-5" href="<?php echo base_url(); ?>/home">
-                        <img src="<?php echo $logo; ?>" class="mr-2" alt="logo"/> T. STUDY 
+                        <img src="<?php echo $logo; ?>" class="mr-2" alt="logo"/> SI PERS 
                     </a>
                 </div>
                 <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">

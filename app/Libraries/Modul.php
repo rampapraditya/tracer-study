@@ -404,19 +404,6 @@ class Modul {
         return $status;
     }
 
-    public function info_file($file) {
-        $data['name'] = $file->getName(); // Mengetahui Nama File
-        $data['originalName'] = $file->getClientName(); // Mengetahui Nama Asli
-        $data['tempfile'] = $file->getTempName(); // Mengetahui Nama TMP File name
-        $data['ext'] = $file->getClientExtension(); // Mengetahui extensi File
-        $data['type'] = $file->getClientMimeType(); // Mengetahui Mime File
-        $data['size_kb'] = $file->getSize('kb'); // Mengetahui Ukuran File dalam kb
-        $data['size_mb'] = $file->getSize('mb'); // Mengetahui Ukuran File dalam mb
-        $data['namabaru'] = $file->getRandomName(); //define nama fiel yang baru secara acak
-
-        return $data;
-    }
-
     function folder_exist($folder) {
         $path = realpath($folder);
         if ($path !== false AND is_dir($path)) {
@@ -425,19 +412,27 @@ class Modul {
         return false;
     }
     
-    public function getPublicPath() {
-        return base_url().'/uploads/';
+    public function info_file($file) {
+        $data['name'] = $file->getName();// Mengetahui Nama File
+        $data['originalName'] = $file->getClientName();// Mengetahui Nama Asli
+        $data['tempfile'] = $file->getTempName();// Mengetahui Nama TMP File name
+        $data['ext'] = $file->getClientExtension();// Mengetahui extensi File
+        $data['type'] = $file->getClientMimeType();// Mengetahui Mime File
+        $data['size_kb'] = $file->getSize('kb'); // Mengetahui Ukuran File dalam kb
+        $data['size_mb'] = $file->getSize('mb');// Mengetahui Ukuran File dalam mb
+        $data['namabaru'] = $file->getRandomName();//define nama fiel yang baru secara acak
+        
+        return $data;
     }
     
-    public function pathExits() {
-        return ROOTPATH.'public/uploads/';
-    }
-    
-    public function hapus_file($path_file) {
-        if(strlen($path_file)){
-            if(file_exists('./uploads/'.$path_file)){
-                unlink('./uploads/'.$path_file);
-            }
+    public function getPathApp() {
+        $mode = "local";
+        if($mode == "local"){
+            $path = 'uploads/';
+        }else if($mode == "online"){
+            $path = '../inventory.pramediaenginering.com/uploads/';
         }
+        
+        return $path;
     }
 }
