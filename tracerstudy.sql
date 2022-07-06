@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jun 12, 2022 at 05:15 AM
+-- Generation Time: Jul 06, 2022 at 02:50 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -37,6 +37,13 @@ CREATE TABLE IF NOT EXISTS `b_asing` (
   PRIMARY KEY (`idb_asing`),
   KEY `FK_b_asing_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `b_asing`
+--
+
+INSERT INTO `b_asing` (`idb_asing`, `idusers`, `nm_bahasa`, `keterangan`, `file`) VALUES
+('B00001', 'U00002', 'Bahasa Inggris', '-', 'U00002/1657033826_6cbc87e304d2329bc0ca.jpg');
 
 -- --------------------------------------------------------
 
@@ -85,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `identitas` (
 --
 
 INSERT INTO `identitas` (`kode`, `instansi`, `slogan`, `tahun`, `pimpinan`, `alamat`, `kdpos`, `tlp`, `fax`, `website`, `email`, `logo`, `lat`, `lon`) VALUES
-('K00001', 'TRACER STUDY', 'Ghora Wira Madya Jala', 1985, 'Laksamana Muda TNI Iwan Isnurwanto, M.A.P., M.Tr.(Han).', 'Dermaga Ujung Surabaya, Jawa Timur', '60178', '08', '-', 'https://koarmada2.tnial.mil.id/', 'rampa@gmail.com', 'tnial.png', '-7.4063726', '112.5841074');
+('K00001', 'TRACER STUDY', 'Ghora Wira Madya Jala', 1985, 'Laksamana Muda TNI Iwan Isnurwanto, M.A.P., M.Tr.(Han).', 'Dermaga Ujung Surabaya, Jawa Timur', '60178', '08', '-', 'https://koarmada2.tnial.mil.id/', 'rampa@gmail.com', '1657029499_19b3fea6a77eae53f5fb.png', '-7.4063726', '112.5841074');
 
 -- --------------------------------------------------------
 
@@ -205,7 +212,7 @@ CREATE TABLE IF NOT EXISTS `pend_militer` (
 --
 
 INSERT INTO `pend_militer` (`idpendidikan`, `idusers`, `nm_pendidikan`, `tahun`, `keterangan`, `file`) VALUES
-('M00001', 'U00002', 'SESKO', '2000', '-', 'U00002/1654245233_4810ca106b97903d35df.jpg');
+('M00001', 'U00002', 'SESKO', '2000', '-', 'U00002/1657031868_caafbda07358324b409c.jpg');
 
 -- --------------------------------------------------------
 
@@ -230,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `pend_umum` (
 --
 
 INSERT INTO `pend_umum` (`idpendidikan`, `idusers`, `nm_pendidikan`, `tahun`, `keterangan`, `file`) VALUES
-('U00002', 'U00002', 'SD', '2000', 'keterangan umum', 'U00002/1654243733_f9fd01852ee50da5630d.jpg');
+('U00001', 'U00002', 'SD', '2000', '-', 'U00002/1657031398_2870325434fe1a1b38cc.jpg');
 
 -- --------------------------------------------------------
 
@@ -314,7 +321,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `idrole`, `idkorps`, `idpangkat`, `foto`) VALUES
 ('U00001', 'ADMIN', 'aGtq', 'ADMIN', 'R00001', 'K00000', 'P00001', 'U00001/foto.jpeg'),
-('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013', 'U00002/atika.png');
+('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013', 'U00002/1657030058_2ee0b012df01f93cc74c.jpg');
 
 -- --------------------------------------------------------
 

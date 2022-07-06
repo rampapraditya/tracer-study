@@ -1363,8 +1363,8 @@ class Pengguna extends BaseController {
                 $val[] = $row->jabatan;
                 $val[] = $row->keterangan;
                 $val[] = '<div style="text-align: center;">'
-                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_r_pangkat('."'".$row->idr_jab."'".')">Ganti</button>&nbsp;'
-                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_r_pangkat('."'".$row->idr_jab."'".','."'".$row->jabatan."'".')">Hapus</button>'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_r_jab('."'".$row->idr_jab."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_r_jab('."'".$row->idr_jab."'".','."'".$row->jabatan."'".')">Hapus</button>'
                         . '</div>';
                 $data[] = $val;
                 
@@ -1377,16 +1377,16 @@ class Pengguna extends BaseController {
         }
     }
     
-    public function ajax_add_r_jabatan() {
+    public function ajax_add_r_jab() {
         if(session()->get("logged_in")){
             $data = array(
-                'idriwayat_pangkat' => $this->model->autokode("R","idriwayat_pangkat","riwayat_pangkat", 2, 7),
+                'idr_jab' => $this->model->autokode("R","idr_jab","riwayat_jabatan", 2, 7),
                 'idusers' => $this->request->getVar('idusers'),
                 'tanggal' => $this->request->getVar('tanggal'),
-                'idpangkat' => $this->request->getVar('pangkat'),
+                'jabatan' => $this->request->getVar('jabatan'),
                 'keterangan' => $this->request->getVar('keterangan')
             );
-            $simpan = $this->model->add("riwayat_pangkat",$data);
+            $simpan = $this->model->add("riwayat_jabatan",$data);
             if($simpan == 1){
                 $status = "Data tersimpan";
             }else{
@@ -1398,11 +1398,49 @@ class Pengguna extends BaseController {
         }
     }
     
-    public function ajax_add_r_jab() {
-        
+    public function show_r_jab() {
+        if(session()->get("logged_in")){
+            $kond['idr_jab'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("riwayat_jabatan", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
     }
     
     public function ajax_edit_r_jab() {
-        
+        if(session()->get("logged_in")){
+            $data = array(
+                'idusers' => $this->request->getVar('idusers'),
+                'tanggal' => $this->request->getVar('tanggal'),
+                'jabatan' => $this->request->getVar('jabatan'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $kond['idr_jab'] = $this->request->getVar('kode');
+            $update = $this->model->update("riwayat_jabatan",$data, $kond);
+            if($update == 1){
+                $status = "Data terupdate";
+            }else{
+                $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function hapus_r_jabatan() {
+        if(session()->get("logged_in")){
+            $kondisi['idr_jab'] = $this->request->uri->getSegment(3);
+            $hapus = $this->model->delete("riwayat_jabatan",$kondisi);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
     }
 }

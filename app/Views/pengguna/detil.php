@@ -150,6 +150,7 @@
     }
     
     function load_r_jabatan(){
+        var idusers = document.getElementById('idusers').value;
         tb_r_jab = $('#tb_r_jab').DataTable({
             ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_jabatan/" + idusers,
             ordering : false,
@@ -770,6 +771,24 @@
         $('#modal_r_jabatan').modal('show');
     }
     
+    function show_r_jab(id){
+        save_method = 'update';
+        $('#form_jabatan')[0].reset();
+        $('#modal_r_jabatan').modal('show');
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/show_r_jab/" + id,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('[name="idr_jab"]').val(data.idr_jab);
+                $('[name="tgl_r_jab"]').val(data.tanggal);
+                $('[name="r_jab"]').val(data.jabatan);
+                $('[name="ket_jab"]').val(data.keterangan);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error get data');
+            }
+        });
+    }
     
     function save_jabatan(){
         var kode = document.getElementById('idr_jab').value;
@@ -822,6 +841,22 @@
 
                     $('#btnSaveJabatan').text('Save');
                     $('#btnSaveJabatan').attr('disabled', false);
+                }
+            });
+        }
+    }
+    
+    function hapus_r_jab(id, nama){
+        if (confirm("Apakah anda yakin menghapus jabatan " + nama + " ?")) {
+            $.ajax({
+                url: "<?php echo base_url(); ?>/pengguna/hapus_r_jabatan/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function (data) {
+                    alert(data.status);
+                    load_r_jabatan();
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error hapus data');
                 }
             });
         }
