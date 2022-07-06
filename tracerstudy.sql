@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jul 06, 2022 at 02:50 AM
+-- Generation Time: Jul 06, 2022 at 02:52 PM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -60,6 +60,21 @@ CREATE TABLE IF NOT EXISTS `b_daerah` (
   `file` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`idb_daerah`),
   KEY `FK_b_daerah_users` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `deskripsi_diri`
+--
+
+DROP TABLE IF EXISTS `deskripsi_diri`;
+CREATE TABLE IF NOT EXISTS `deskripsi_diri` (
+  `iddeskripsi` varchar(6) NOT NULL,
+  `idusers` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+  `deskripsi` text NOT NULL,
+  PRIMARY KEY (`iddeskripsi`),
+  KEY `FK_deskripsi_diri_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -298,6 +313,30 @@ INSERT INTO `role` (`idrole`, `nama_role`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tanda_jasa`
+--
+
+DROP TABLE IF EXISTS `tanda_jasa`;
+CREATE TABLE IF NOT EXISTS `tanda_jasa` (
+  `idtjasa` varchar(6) NOT NULL,
+  `idusers` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+  `tanda_jasa` varchar(45) NOT NULL,
+  `keterangan` varchar(150) DEFAULT NULL,
+  `file` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`idtjasa`),
+  KEY `FK_tanda_jasa_users` (`idusers`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `tanda_jasa`
+--
+
+INSERT INTO `tanda_jasa` (`idtjasa`, `idusers`, `tanda_jasa`, `keterangan`, `file`) VALUES
+('B00001', 'U00002', 'Bahasa Inggris', '-', 'U00002/1657033826_6cbc87e304d2329bc0ca.jpg');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -374,6 +413,12 @@ ALTER TABLE `b_daerah`
   ADD CONSTRAINT `FK_b_daerah_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `deskripsi_diri`
+--
+ALTER TABLE `deskripsi_diri`
+  ADD CONSTRAINT `FK_deskripsi_diri_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `pend_militer`
 --
 ALTER TABLE `pend_militer`
@@ -397,6 +442,12 @@ ALTER TABLE `riwayat_jabatan`
 ALTER TABLE `riwayat_pangkat`
   ADD CONSTRAINT `FK_riwayat_pangkat_pangkat` FOREIGN KEY (`idpangkat`) REFERENCES `pangkat` (`idpangkat`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_riwayat_pangkat_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tanda_jasa`
+--
+ALTER TABLE `tanda_jasa`
+  ADD CONSTRAINT `FK_tanda_jasa_users` FOREIGN KEY (`idusers`) REFERENCES `users` (`idusers`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `users`
