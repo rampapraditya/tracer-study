@@ -127,6 +127,46 @@
         });
     }
     
+    function load_r_pangkat(){
+        var idusers = document.getElementById('idusers').value;
+        
+        tb_r_pang = $('#tb_r_pang').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_pangkat/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        tb_r_pang.destroy();
+        tb_r_pang = $('#tb_r_pang').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_pangkat/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        
+        
+    }
+    
+    function load_r_jabatan(){
+        tb_r_jab = $('#tb_r_jab').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_jabatan/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        tb_r_jab.destroy();
+        tb_r_jab = $('#tb_r_jab').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_jabatan/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+    }
+    
     function save() {
         var idusers = document.getElementById('idusers').value;
         var nrp = document.getElementById('nrp').value;
@@ -620,11 +660,171 @@
     }
     
     function r_pangkat(){
+        save_method = "add";
+        $('#form_pangkat')[0].reset();
+        $('#modal_riwayat_pangkat').modal('show');
+    }
     
+    function closemodal_pangkat(){
+        $('#modal_riwayat_pangkat').modal('hide');
+    }
+    
+    function save_pangkat(){
+        var kode = document.getElementById('kode_r_pangkat').value;
+        var idusers = document.getElementById('idusers').value;
+        var tgl = document.getElementById('tgl_r_pangkat').value;
+        var pangkat = document.getElementById('r_pangkat').value;
+        var ket = document.getElementById('ket_pangkat').value;
+
+        if (tgl === "") {
+            alert("Tanggal pangkat tidak boleh kosong");
+        }else if(pangkat === "-"){
+            alert("Pangkat tidak boleh kosong");
+        } else {
+            $('#btnSavePangkat').text('Saving...'); 
+            $('#btnSavePangkat').attr('disabled', true);
+
+            var url = "";
+            if (save_method === "add")  {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_r_pangkat";
+            } else if (save_method === "update") {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_r_pangkat";
+            }
+            
+            var form_data = new FormData();
+            form_data.append('idusers', idusers);
+            form_data.append('kode', kode);
+            form_data.append('tanggal', tgl);
+            form_data.append('pangkat', pangkat);
+            form_data.append('keterangan', ket);
+            
+            $.ajax({
+                url: url,
+                dataType: 'JSON',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'POST',
+                success: function (response) {
+                    alert(response.status);
+                    
+                    $('#modal_riwayat_pangkat').modal('hide');
+                    load_r_pangkat();
+                    
+                    $('#btnSavePangkat').text('Save'); 
+                    $('#btnSavePangkat').attr('disabled', false);
+                    
+                }, error: function (response) {
+                    alert(response.status);
+
+                    $('#btnSavePangkat').text('Save');
+                    $('#btnSavePangkat').attr('disabled', false);
+                }
+            });
+        }
+    }
+    
+    function show_r_pangkat(id){
+        save_method = 'update';
+        $('#form_pangkat')[0].reset();
+        $('#modal_riwayat_pangkat').modal('show');
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/show_r_pangkat/" + id,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('[name="kode_r_pangkat"]').val(data.idriwayat_pangkat);
+                $('[name="tgl_r_pangkat"]').val(data.tanggal);
+                $('[name="r_pangkat"]').val(data.idpangkat);
+                $('[name="ket_pangkat"]').val(data.keterangan);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error get data');
+            }
+        });
+    }
+    
+    function hapus_r_pangkat(id, nama){
+        if (confirm("Apakah anda yakin menghapus pangkat " + nama + " ?")) {
+            $.ajax({
+                url: "<?php echo base_url(); ?>/pengguna/hapus_r_pangkat/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function (data) {
+                    alert(data.status);
+                    load_r_pangkat();
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error hapus data');
+                }
+            });
+        }
+    }
+    
+    function closemodal_jabatan(){
+        $('#modal_r_jabatan').modal('hide');
     }
     
     function r_jabatan(){
+        save_method = "add";
+        $('#form_jabatan')[0].reset();
+        $('#modal_r_jabatan').modal('show');
+    }
     
+    
+    function save_jabatan(){
+        var kode = document.getElementById('idr_jab').value;
+        var idusers = document.getElementById('idusers').value;
+        var tgl = document.getElementById('tgl_r_jab').value;
+        var jab = document.getElementById('r_jab').value;
+        var ket = document.getElementById('ket_jab').value;
+
+        if (tgl === "") {
+            alert("Tanggal pangkat tidak boleh kosong");
+        }else if(jab === ""){
+            alert("Jabatan tidak boleh kosong");
+        } else {
+            $('#btnSaveJabatan').text('Saving...'); 
+            $('#btnSaveJabatan').attr('disabled', true);
+
+            var url = "";
+            if (save_method === "add")  {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_r_jab";
+            } else if (save_method === "update") {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_r_jab";
+            }
+            
+            var form_data = new FormData();
+            form_data.append('idusers', idusers);
+            form_data.append('kode', kode);
+            form_data.append('tanggal', tgl);
+            form_data.append('jabatan', jab);
+            form_data.append('keterangan', ket);
+            
+            $.ajax({
+                url: url,
+                dataType: 'JSON',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'POST',
+                success: function (response) {
+                    alert(response.status);
+                    
+                    $('#modal_r_jabatan').modal('hide');
+                    load_r_jabatan();
+                    
+                    $('#btnSaveJabatan').text('Save'); 
+                    $('#btnSaveJabatan').attr('disabled', false);
+                    
+                }, error: function (response) {
+                    alert(response.status);
+
+                    $('#btnSaveJabatan').text('Save');
+                    $('#btnSaveJabatan').attr('disabled', false);
+                }
+            });
+        }
     }
     
     function t_jasa(){
@@ -1086,6 +1286,95 @@
             <div class="modal-footer">
                 <button id="btnSaveBahasa" type="button" class="btn btn-primary btn-xs" onclick="save_bahasa();">Save</button>
                 <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_bahasa();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_riwayat_pangkat" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Riwayat Pangkat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_pangkat();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_pangkat" class="form-horizontal">
+                    <input type="hidden" id="kode_r_pangkat" name="kode_r_pangkat">
+                    <div class="form-group row">
+                        <label for="tgl_r_pangkat" class="col-sm-3 col-form-label">TANGGAL</label>
+                        <div class="col-sm-9">
+                            <input id="tgl_r_pangkat" name="tgl_r_pangkat" class="form-control" type="date" autocomplete="off" value="<?php echo $def_tgl; ?>">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="r_pangkat" class="col-sm-3 col-form-label">PANGKAT</label>
+                        <div class="col-sm-9">
+                            <select id="r_pangkat" name="r_pangkat" class="form-control">
+                                <option value="-">- PILIH PANGKAT -</option>
+                                <?php
+                                foreach ($pangkat->getResult() as $row) {
+                                    ?>
+                                <option value="<?php echo $row->idpangkat; ?>"><?php echo $row->nama_pangkat; ?></option>
+                                    <?php
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="ket_pangkat" class="col-sm-3 col-form-label">KETERANGAN</label>
+                        <div class="col-sm-9">
+                            <input id="ket_pangkat" name="ket_pangkat" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSavePangkat" type="button" class="btn btn-primary btn-xs" onclick="save_pangkat();">Save</button>
+                <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_pangkat();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_r_jabatan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Riwayat Jabatan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_jabatan();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_jabatan" class="form-horizontal">
+                    <input type="hidden" id="idr_jab" name="idr_jab">
+                    <div class="form-group row">
+                        <label for="tgl_r_jab" class="col-sm-3 col-form-label">TANGGAL</label>
+                        <div class="col-sm-9">
+                            <input id="tgl_r_jab" name="tgl_r_jab" class="form-control" type="date" autocomplete="off" value="<?php echo $def_tgl; ?>">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="r_jab" class="col-sm-3 col-form-label">JABATAN</label>
+                        <div class="col-sm-9">
+                            <input id="r_jab" name="r_jab" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="ket_jab" class="col-sm-3 col-form-label">KETERANGAN</label>
+                        <div class="col-sm-9">
+                            <input id="ket_jab" name="ket_jab" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSaveJabatan" type="button" class="btn btn-primary btn-xs" onclick="save_jabatan();">Save</button>
+                <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_jabatan();">Close</button>
             </div>
         </div>
     </div>

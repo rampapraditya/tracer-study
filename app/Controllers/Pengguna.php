@@ -199,6 +199,7 @@ class Pengguna extends BaseController {
                 }
             }
             $data['logo'] = $def_logo;
+            $data['def_tgl'] = $this->modul->TanggalSekarang();
             $data['pangkat'] = $this->model->getAllQ("select * from pangkat where idpangkat <> 'P00001';");
             $data['korps'] = $this->model->getAllQ("select * from korps where idkorps <> 'K00000';");
 
@@ -644,6 +645,8 @@ class Pengguna extends BaseController {
                 $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
             }else if($mode == "basing"){
                 $foto = $this->model->getAllQR("select file from b_asing where idb_asing = '".$kode."';")->file;
+            }else if($mode == "bdaerah"){
+                $foto = $this->model->getAllQR("select file from b_daerah where idb_daerah = '".$kode."';")->file;
             }
             
             if (strlen($foto) > 0) {
@@ -667,6 +670,8 @@ class Pengguna extends BaseController {
                 $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
             }else if($mode == "basing"){
                 $foto = $this->model->getAllQR("select file from b_asing where idb_asing = '".$kode."';")->file;
+            }else if($mode == "bdaerah"){
+                $foto = $this->model->getAllQR("select file from b_daerah where idb_daerah = '".$kode."';")->file;
             }
             return $this->response->download('uploads/' . $foto, null);
         }else {
@@ -888,10 +893,10 @@ class Pengguna extends BaseController {
                 $path = base_url().'/images/noimg/jpg';
                 if(strlen($row->file) > 0){
                     if(file_exists($this->modul->getPathApp().$row->file)){
-                        $path = $this->modul->getPathApp().$row->file;
+                        $path = base_url().'/'.$this->modul->getPathApp().$row->file;
                     }
                 }
-                $val[] = '<img src="'.$path.'" style="width: 100px; height: auto;" class="img-thumbnail">';
+                $val[] = '<img src="'.$path.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idb_daerah."'".','."'bdaerah'".')">';
                 $val[] = '<div style="text-align: center;">'
                         . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_b_daerah('."'".$row->idb_daerah."'".')">Ganti</button>&nbsp;'
                         . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_b_daerah('."'".$row->idb_daerah."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
@@ -1101,10 +1106,10 @@ class Pengguna extends BaseController {
         $namaFile = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$namaFile)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $namaFile);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
             if($status_upload){
                 $data = array(
                     'idb_daerah' => $this->model->autokode("B","idb_daerah","b_daerah", 2, 7),
@@ -1172,18 +1177,22 @@ class Pengguna extends BaseController {
     
     private function update_b_daerah_file() {
         // hapus file lama
-        $file_lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$this->request->getVar('kode')."';")->file;
-        $this->modul->hapus_file($file_lawas);
+        $lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas)){
+                unlink($this->modul->getPathApp().$lawas);
+            }
+        }
             
         $nm_folder = $this->request->getVar('idusers');
         $file = $this->request->getFile('file');
         $fileName = $file->getRandomName();
         $info_file = $this->modul->info_file($file);
         
-        if(file_exists(ROOTPATH.'public/uploads/'.$nm_folder.'/'.$fileName)){
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
             $status = "Gunakan nama file lain";
         }else{
-            $status_upload = $file->move(ROOTPATH.'public/uploads/'.$nm_folder, $fileName);
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
             if($status_upload){
                 $data = array(
                     'idusers' => $this->request->getVar('idusers'),
@@ -1225,8 +1234,12 @@ class Pengguna extends BaseController {
         if(session()->get("logged_in")){
             $kode = $this->request->uri->getSegment(3);
             // cek file
-            $file_lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$kode."';")->file;
-            $this->modul->hapus_file($file_lawas);
+            $lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$kode."';")->file;
+            if(strlen($lawas) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas)){
+                    unlink($this->modul->getPathApp().$lawas);
+                }
+            }
             
             $kond['idb_daerah'] = $kode;
             $hapus = $this->model->delete("b_daerah",$kond);
@@ -1269,6 +1282,73 @@ class Pengguna extends BaseController {
         }
     }
     
+    public function ajax_add_r_pangkat() {
+        if(session()->get("logged_in")){
+            $data = array(
+                'idriwayat_pangkat' => $this->model->autokode("R","idriwayat_pangkat","riwayat_pangkat", 2, 7),
+                'idusers' => $this->request->getVar('idusers'),
+                'tanggal' => $this->request->getVar('tanggal'),
+                'idpangkat' => $this->request->getVar('pangkat'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $simpan = $this->model->add("riwayat_pangkat",$data);
+            if($simpan == 1){
+                $status = "Data tersimpan";
+            }else{
+                $status = "Data gagal tersimpan";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function show_r_pangkat() {
+        if(session()->get("logged_in")){
+            $kondisi['idriwayat_pangkat'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("riwayat_pangkat", $kondisi);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_r_pangkat() {
+        if(session()->get("logged_in")){
+            $data = array(
+                'idusers' => $this->request->getVar('idusers'),
+                'tanggal' => $this->request->getVar('tanggal'),
+                'idpangkat' => $this->request->getVar('pangkat'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $kond['idriwayat_pangkat'] = $this->request->getVar('kode');
+            $update = $this->model->update("riwayat_pangkat",$data, $kond);
+            if($update == 1){
+                $status = "Data terupdate";
+            }else{
+                $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function hapus_r_pangkat() {
+        if(session()->get("logged_in")){
+            $kondisi['idriwayat_pangkat'] = $this->request->uri->getSegment(3);
+            $hapus = $this->model->delete("riwayat_pangkat",$kondisi);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
     public function ajaxlist_r_jabatan() {
         if(session()->get("logged_in")){
             $idusers = $this->request->uri->getSegment(3);
@@ -1295,5 +1375,34 @@ class Pengguna extends BaseController {
         }else{
             $this->modul->halaman('login');
         }
+    }
+    
+    public function ajax_add_r_jabatan() {
+        if(session()->get("logged_in")){
+            $data = array(
+                'idriwayat_pangkat' => $this->model->autokode("R","idriwayat_pangkat","riwayat_pangkat", 2, 7),
+                'idusers' => $this->request->getVar('idusers'),
+                'tanggal' => $this->request->getVar('tanggal'),
+                'idpangkat' => $this->request->getVar('pangkat'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $simpan = $this->model->add("riwayat_pangkat",$data);
+            if($simpan == 1){
+                $status = "Data tersimpan";
+            }else{
+                $status = "Data gagal tersimpan";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_r_jab() {
+        
+    }
+    
+    public function ajax_edit_r_jab() {
+        
     }
 }
