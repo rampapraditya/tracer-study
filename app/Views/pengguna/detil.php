@@ -48,6 +48,13 @@
             searching : false
         });
         
+        tb_t_jasa = $('#tb_t_jasa').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_t_jasa/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false
+        });
+        
     });
 
     function load_pend_umum(){
@@ -161,6 +168,25 @@
         tb_r_jab.destroy();
         tb_r_jab = $('#tb_r_jab').DataTable({
             ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_r_jabatan/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+    }
+    
+    function load_t_jasa(){
+        var idusers = document.getElementById('idusers').value;
+        tb_t_jasa = $('#tb_t_jasa').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_t_jasa/" + idusers,
+            ordering : false,
+            paging : false,
+            searching : false,
+            retrieve : true
+        });
+        tb_t_jasa.destroy();
+        tb_t_jasa = $('#tb_t_jasa').DataTable({
+            ajax: "<?php echo base_url(); ?>/pengguna/ajaxlist_t_jasa/" + idusers,
             ordering : false,
             paging : false,
             searching : false,
@@ -863,7 +889,84 @@
     }
     
     function t_jasa(){
-        
+        save_method = "add";
+        $('#form_jasa')[0].reset();
+        $('#modal_t_jasa').modal('show');
+    }
+    
+    function closemodal_tjasa(){
+        $('#modal_t_jasa').modal('hide');
+    }
+    
+    function show_jasa(id){
+        save_method = 'update';
+        $('#form_jasa')[0].reset();
+        $('#modal_r_jabatan').modal('show');
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/show_r_jab/" + id,
+            type: "POST",
+            dataType: "JSON",
+            success: function (data) {
+                $('[name="idr_jab"]').val(data.idr_jab);
+                $('[name="tgl_r_jab"]').val(data.tanggal);
+                $('[name="r_jab"]').val(data.jabatan);
+                $('[name="ket_jab"]').val(data.keterangan);
+            }, error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error get data');
+            }
+        });
+    }
+    
+    function save_jasa(){
+        var kode = document.getElementById('id_t_jasa').value;
+        var idusers = document.getElementById('idusers').value;
+        var jasa = document.getElementById('t_jasa').value;
+        var ket = document.getElementById('ket_jab').value;
+
+        if (jasa === "") {
+            alert("Tanda jasa tidak boleh kosong");
+        } else {
+            $('#btnSaveTjasa').text('Saving...'); 
+            $('#btnSaveTjasa').attr('disabled', true);
+
+            var url = "";
+            if (save_method === "add")  {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_add_jasa";
+            } else if (save_method === "update") {
+                url = "<?php echo base_url(); ?>/pengguna/ajax_edit_jasa";
+            }
+            
+            var form_data = new FormData();
+            form_data.append('idusers', idusers);
+            form_data.append('kode', kode);
+            form_data.append('jasa', jasa);
+            form_data.append('keterangan', ket);
+            
+            $.ajax({
+                url: url,
+                dataType: 'JSON',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'POST',
+                success: function (response) {
+                    alert(response.status);
+                    
+                    $('#modal_t_jasa').modal('hide');
+                    load_t_jasa();
+                    
+                    $('#btnSaveTjasa').text('Save'); 
+                    $('#btnSaveTjasa').attr('disabled', false);
+                    
+                }, error: function (response) {
+                    alert(response.status);
+
+                    $('#btnSaveTjasa').text('Save');
+                    $('#btnSaveTjasa').attr('disabled', false);
+                }
+            });
+        }
     }
     
 </script>
@@ -1178,6 +1281,18 @@
                                     <button class="btn btn-primary btn-xs" onclick="t_jasa()"> Tanda Jasa </button>
                                 </div>
                                 <div class="col-md-12" style="margin-top: 10px;">
+                                    <table id="tb_t_jasa" class="table table-bordered" style="width: 100%; font-size: 11px;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>TANDA JASA</th>
+                                                <th>KETERANGAN</th>
+                                                <th style="text-align: center;">AKSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -1410,6 +1525,40 @@
             <div class="modal-footer">
                 <button id="btnSaveJabatan" type="button" class="btn btn-primary btn-xs" onclick="save_jabatan();">Save</button>
                 <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_jabatan();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_t_jasa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Tanda Jasa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closemodal_tjasa();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form_jasa" class="form-horizontal">
+                    <input type="hidden" id="id_t_jasa" name="id_t_jasa">
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="t_jasa" class="col-sm-3 col-form-label">TANDA JASA</label>
+                        <div class="col-sm-9">
+                            <input id="t_jasa" name="t_jasa" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-top: -12px;">
+                        <label for="ket_jab" class="col-sm-3 col-form-label">KETERANGAN</label>
+                        <div class="col-sm-9">
+                            <input id="ket_jasa" name="ket_jasa" class="form-control" type="text" autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btnSaveTjasa" type="button" class="btn btn-primary btn-xs" onclick="save_jasa();">Save</button>
+                <button type="button" class="btn btn-secondary btn-xs" onclick="closemodal_tjasa();">Close</button>
             </div>
         </div>
     </div>

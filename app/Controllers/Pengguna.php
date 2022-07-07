@@ -1443,4 +1443,80 @@ class Pengguna extends BaseController {
             $this->modul->halaman('login');
         }
     }
+    public function ajaxlist_t_jasa() {
+        if(session()->get("logged_in")){
+            $idusers = $this->request->uri->getSegment(3);
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("SELECT idtjasa, tanda_jasa, keterangan FROM tanda_jasa where idusers = '".$idusers."';");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->tanda_jasa;
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_jasa('."'".$row->idtjasa."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_jasa('."'".$row->idtjasa."'".','."'".$row->tanda_jasa."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function show_jasa() {
+        if(session()->get("logged_in")){
+            $kond['idr_jab'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("riwayat_jabatan", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_jasa() {
+        if(session()->get("logged_in")){
+            $data = array(
+                'idtjasa' => $this->model->autokode("J","idtjasa","tanda_jasa", 2, 7),
+                'idusers' => $this->request->getVar('idusers'),
+                'tanda_jasa' => $this->request->getVar('jasa'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $simpan = $this->model->add("tanda_jasa",$data);
+            if($simpan == 1){
+                $status = "Data tersimpan";
+            }else{
+                $status = "Data gagal tersimpan";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_jasa() {
+        if(session()->get("logged_in")){
+            $data = array(
+                'idusers' => $this->request->getVar('idusers'),
+                'tanda_jasa' => $this->request->getVar('jasa'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $kond['idtjasa'] = $this->request->getVar('kode');
+            $update = $this->model->update("tanda_jasa",$data, $kond);
+            if($update == 1){
+                $status = "Data terupdate";
+            }else{
+                $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
 }
