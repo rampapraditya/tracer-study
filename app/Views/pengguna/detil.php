@@ -1314,8 +1314,31 @@
                         </div>
                         <div class="tab-pane fade" id="nav_desc_diri" role="tabpanel" aria-labelledby="nav_desc_diri">
                             <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary btn-xs" onclick="simpan_desc_diri()"> Simpan Deskripsi Diri </button>
+                                </div>
                                 <div class="col-md-12" style="margin-top: 10px;">
-                                    
+                                    <textarea class="form-control" id="ket_deskripsi" name="ket_deskripsi"></textarea>
+                                    <script type="text/javascript">
+                                        var BASE_URL = "<?php echo base_url(); ?>";
+                                        tinymce.init({
+                                            selector: "#ket_deskripsi",theme: "modern",height: 250,
+                                            plugins: [
+                                                "advlist autolink link image lists charmap print preview hr anchor pagebreak",
+                                                "searchreplace wordcount visualblocks visualchars insertdatetime nonbreaking",
+                                                "table contextmenu directionality emoticons paste textcolor"
+                                        ],
+                                        toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | styleselect",
+                                        toolbar2: "| link unlink anchor | forecolor backcolor  | print preview code ",
+                                        image_advtab: true ,
+                                        external_filemanager_path: BASE_URL + "/filemanager/",
+                                        filemanager_title: "File Gallery",
+                                        relative_urls : false,
+                                        remove_script_host : false,
+                                        convert_urls : true,
+                                        external_plugins: {"filemanager": BASE_URL + "/filemanager/plugin.min.js"}
+                                        });
+                                    </script>
                                 </div>
                             </div>
                         </div>

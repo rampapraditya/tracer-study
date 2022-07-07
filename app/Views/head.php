@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="<?php echo base_url(); ?>/css/vertical-layout-light/style.css">
         <link rel="shortcut icon" href="<?php echo base_url(); ?>/images/favicon.png" />
         <script src="<?php echo base_url(); ?>/js/jquery-3.5.1.js"></script>
-        <script src="<?php echo base_url(); ?>/tinymce/tinymce.min.js"></script>
+        <script src="<?php echo base_url(); ?>/js/tinymce/tinymce.min.js"></script>
         <script src="<?php echo base_url(); ?>/fancy/jquery.fancybox.pack.js" ></script>
         <style>
             .tabbable-panel {

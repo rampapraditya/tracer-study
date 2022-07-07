@@ -67,6 +67,11 @@ define('DEBUG_ERROR_MESSAGE', false); // TRUE or FALSE
 //$_SESSION["subfolder"] = "atika";
 //echo $_SESSION["subfolder"];
 //$ses = $_GET['ses'];
+
+$base = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
+$base .= "://" . $_SERVER['HTTP_HOST'];
+$base .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
+
 $config = array(
 
     /*
@@ -77,8 +82,8 @@ $config = array(
     | without final / (DON'T TOUCH)
     |
     */
-    //'base_url' => ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http"). "://". @$_SERVER['HTTP_HOST'],
-    'base_url' => $_SESSION['tautan_utama'],
+    'base_url' => $base,
+    //'base_url' => $_SESSION['tautan_utama'],
     
     /*
     |--------------------------------------------------------------------------
