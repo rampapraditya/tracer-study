@@ -1472,8 +1472,8 @@ class Pengguna extends BaseController {
     
     public function show_jasa() {
         if(session()->get("logged_in")){
-            $kond['idr_jab'] = $this->request->uri->getSegment(3);
-            $data = $this->model->get_by_id("riwayat_jabatan", $kond);
+            $kond['idtjasa'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("tanda_jasa", $kond);
             echo json_encode($data);
         }else{
             $this->modul->halaman('login');
@@ -1513,6 +1513,21 @@ class Pengguna extends BaseController {
                 $status = "Data terupdate";
             }else{
                 $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+
+    public function hapus_jasa() {
+        if(session()->get("logged_in")){
+            $kond['idtjasa'] = $this->request->uri->getSegment(3);
+            $hapus = $this->model->delete("tanda_jasa",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
             }
             echo json_encode(array("status" => $status));
         }else{

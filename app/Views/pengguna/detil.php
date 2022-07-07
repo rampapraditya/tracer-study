@@ -901,16 +901,15 @@
     function show_jasa(id){
         save_method = 'update';
         $('#form_jasa')[0].reset();
-        $('#modal_r_jabatan').modal('show');
+        $('#modal_t_jasa').modal('show');
         $.ajax({
-            url: "<?php echo base_url(); ?>/pengguna/show_r_jab/" + id,
+            url: "<?php echo base_url(); ?>/pengguna/show_jasa/" + id,
             type: "POST",
             dataType: "JSON",
             success: function (data) {
-                $('[name="idr_jab"]').val(data.idr_jab);
-                $('[name="tgl_r_jab"]').val(data.tanggal);
-                $('[name="r_jab"]').val(data.jabatan);
-                $('[name="ket_jab"]').val(data.keterangan);
+                $('[name="id_t_jasa"]').val(data.idtjasa);
+                $('[name="t_jasa"]').val(data.tanda_jasa);
+                $('[name="ket_jasa"]').val(data.keterangan);
             }, error: function (jqXHR, textStatus, errorThrown) {
                 alert('Error get data');
             }
@@ -921,7 +920,7 @@
         var kode = document.getElementById('id_t_jasa').value;
         var idusers = document.getElementById('idusers').value;
         var jasa = document.getElementById('t_jasa').value;
-        var ket = document.getElementById('ket_jab').value;
+        var ket = document.getElementById('ket_jasa').value;
 
         if (jasa === "") {
             alert("Tanda jasa tidak boleh kosong");
@@ -969,6 +968,22 @@
         }
     }
     
+    function hapus_jasa(id, nama){
+        if (confirm("Apakah anda yakin menghapus tanda jasa " + nama + " ?")) {
+            $.ajax({
+                url: "<?php echo base_url(); ?>/pengguna/hapus_jasa/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function (data) {
+                    alert(data.status);
+                    load_t_jasa();
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error hapus data');
+                }
+            });
+        }
+    }
+
 </script>
 
 <div class="content-wrapper">
