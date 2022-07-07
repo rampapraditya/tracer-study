@@ -984,6 +984,31 @@
         }
     }
 
+    function simpan_desc_diri(){
+        var idusers = document.getElementById('idusers').value;
+        var ket = tinyMCE.get('ket_deskripsi').getContent();
+        
+        var form_data = new FormData();
+        form_data.append('idusers', idusers);
+        form_data.append('deskripsi', ket);
+        
+        $.ajax({
+            url: "<?php echo base_url(); ?>/pengguna/proses_deskripsi",
+            dataType: 'JSON',
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            type: 'POST',
+            success: function (response) {
+                alert(response.status);
+                
+            },error: function (response) {
+                alert(response.status);
+            }
+        });
+    }
+
 </script>
 
 <div class="content-wrapper">
@@ -1318,7 +1343,7 @@
                                     <button class="btn btn-primary btn-xs" onclick="simpan_desc_diri()"> Simpan Deskripsi Diri </button>
                                 </div>
                                 <div class="col-md-12" style="margin-top: 10px;">
-                                    <textarea class="form-control" id="ket_deskripsi" name="ket_deskripsi"></textarea>
+                                    <textarea class="form-control" id="ket_deskripsi" name="ket_deskripsi"><?php echo $deskripsi_diri; ?></textarea>
                                     <script type="text/javascript">
                                         var BASE_URL = "<?php echo base_url(); ?>";
                                         tinymce.init({

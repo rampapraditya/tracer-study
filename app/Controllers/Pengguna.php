@@ -251,6 +251,15 @@ class Pengguna extends BaseController {
                     $data['agama'] = "";
                 }
 
+                // membaca tentang deskripsi diri
+                $cek_deskripsi = $this->model->getAllQR("SELECT count(*) as jml FROM deskripsi_diri where idusers = '".$idusers."';")->jml;
+                if($cek_deskripsi > 0){
+                    $data['deskripsi_diri'] = $this->model->getAllQR("SELECT deskripsi FROM deskripsi_diri where idusers = '".$idusers."';")->deskripsi;
+                }else{
+                    $data['deskripsi_diri'] = "";
+                }
+                
+
                 echo view('head', $data);
                 echo view('menu');
                 echo view('pengguna/detil');
@@ -1528,6 +1537,39 @@ class Pengguna extends BaseController {
                 $status = "Data terhapus";
             }else{
                 $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+
+    public function proses_deskripsi(){
+        if(session()->get("logged_in")){
+            $jml = $this->model->getAllQR("SELECT count(*) as jml FROM deskripsi_diri where idusers = '".$this->request->getVar('idusers')."';")->jml;
+            if($jml > 0){
+                $data = array(
+                    'deskripsi' => $this->request->getVar('deskripsi')
+                );
+                $kond['idusers'] = $this->request->getVar('idusers');
+                $update = $this->model->update("deskripsi_diri",$data, $kond);
+                if($update == 1){
+                    $status = "Deskripsi terupdate";
+                }else{
+                    $status = "Deskripsi gagal terupdate";
+                }
+            }else{
+                $data = array(
+                    'iddeskripsi' => $this->model->autokode("D","iddeskripsi","deskripsi_diri", 2, 7),
+                    'idusers' => $this->request->getVar('idusers'),
+                    'deskripsi' => $this->request->getVar('deskripsi')
+                );
+                $simpan = $this->model->add("deskripsi_diri",$data);
+                if($simpan == 1){
+                    $status = "Deskripsi tersimpan";
+                }else{
+                    $status = "Deskripsi gagal tersimpan";
+                }
             }
             echo json_encode(array("status" => $status));
         }else{
