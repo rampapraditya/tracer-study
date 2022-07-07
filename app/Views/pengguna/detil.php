@@ -1004,6 +1004,7 @@
                             <a class="nav-item nav-link" id="head_nav_r_pang" data-toggle="tab" href="#nav_r_pangkat" role="tab" aria-controls="nav_r_pangkat" aria-selected="false">Riwayat Pangkat</a>
                             <a class="nav-item nav-link" id="head_nav_r_jab" data-toggle="tab" href="#nav_r_jabatan" role="tab" aria-controls="nav_r_jabatan" aria-selected="false">Riwayat Jabatan</a>
                             <a class="nav-item nav-link" id="head_nav_t_jasa" data-toggle="tab" href="#nav_t_jasa" role="tab" aria-controls="nav_t_jasa" aria-selected="false">Tanda Jasa</a>
+                            <a class="nav-item nav-link" id="head_nav_desc_diri" data-toggle="tab" href="#nav_desc_diri" role="tab" aria-controls="nav_desc_diri" aria-selected="false">Deskripsi Diri</a>
                         </div>
                     </nav>
                     <div class="tab-content" id="nav-tabContent">
@@ -1308,6 +1309,13 @@
                                         <tbody>
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav_desc_diri" role="tabpanel" aria-labelledby="nav_desc_diri">
+                            <div class="row">
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    
                                 </div>
                             </div>
                         </div>
