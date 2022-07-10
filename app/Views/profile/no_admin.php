@@ -4,52 +4,50 @@
     var tb_p_umum, tb_p_militer, tb_bahasa_asing, tb_bahasa_daerah, tb_r_pang, tb_r_jab, tb_t_jasa;
     
     $(document).ready(function () {
-        var idusers = document.getElementById('idusers').value;
-        
         tb_p_umum = $('#tb_p_umum').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_umum/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_umum",
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_p_militer = $('#tb_p_militer').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_militer/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_militer",
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_asing/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_asing",
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_daerah/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_daerah",
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_r_pang = $('#tb_r_pang').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_pangkat/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_pangkat",
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_r_jab = $('#tb_r_jab').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_jabatan/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_jabatan",
             ordering : false,
             paging : false,
             searching : false
         });
         
         tb_t_jasa = $('#tb_t_jasa').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_t_jasa/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_t_jasa",
             ordering : false,
             paging : false,
             searching : false
@@ -58,10 +56,8 @@
     });
 
     function load_pend_umum(){
-        var idusers = document.getElementById('idusers').value;
-        
         tb_p_umum = $('#tb_p_umum').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_umum/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_umum",
             ordering : false,
             paging : false,
             searching : false,
@@ -69,7 +65,7 @@
         });
         tb_p_umum.destroy();
         tb_p_umum = $('#tb_p_umum').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_umum/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_umum",
             ordering : false,
             paging : false,
             searching : false,
@@ -78,10 +74,8 @@
     }
     
     function load_pend_militer(){
-        var idusers = document.getElementById('idusers').value;
-        
         tb_p_militer = $('#tb_p_militer').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_militer/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_militer",
             ordering : false,
             paging : false,
             searching : false,
@@ -89,7 +83,7 @@
         });
         tb_p_militer.destroy();
         tb_p_militer = $('#tb_p_militer').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_militer/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_p_militer",
             ordering : false,
             paging : false,
             searching : false,
@@ -98,10 +92,8 @@
     }
     
     function load_bahasa(){
-        var idusers = document.getElementById('idusers').value;
-        
         tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_asing/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_asing",
             ordering : false,
             paging : false,
             searching : false,
@@ -109,7 +101,7 @@
         });
         tb_bahasa_asing.destroy();
         tb_bahasa_asing = $('#tb_bahasa_asing').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_asing/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_asing",
             ordering : false,
             paging : false,
             searching : false,
@@ -118,7 +110,7 @@
         
         
         tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_daerah/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_daerah",
             ordering : false,
             paging : false,
             searching : false,
@@ -126,7 +118,7 @@
         });
         tb_bahasa_daerah.destroy();
         tb_bahasa_daerah = $('#tb_bahasa_daerah').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_daerah/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_b_daerah",
             ordering : false,
             paging : false,
             searching : false,
@@ -135,10 +127,8 @@
     }
     
     function load_r_pangkat(){
-        var idusers = document.getElementById('idusers').value;
-        
         tb_r_pang = $('#tb_r_pang').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_pangkat/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_pangkat",
             ordering : false,
             paging : false,
             searching : false,
@@ -146,7 +136,7 @@
         });
         tb_r_pang.destroy();
         tb_r_pang = $('#tb_r_pang').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_pangkat/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_pangkat",
             ordering : false,
             paging : false,
             searching : false,
@@ -157,9 +147,8 @@
     }
     
     function load_r_jabatan(){
-        var idusers = document.getElementById('idusers').value;
         tb_r_jab = $('#tb_r_jab').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_jabatan/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_jabatan",
             ordering : false,
             paging : false,
             searching : false,
@@ -167,7 +156,7 @@
         });
         tb_r_jab.destroy();
         tb_r_jab = $('#tb_r_jab').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_jabatan/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_r_jabatan",
             ordering : false,
             paging : false,
             searching : false,
@@ -176,9 +165,8 @@
     }
     
     function load_t_jasa(){
-        var idusers = document.getElementById('idusers').value;
         tb_t_jasa = $('#tb_t_jasa').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_t_jasa/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_t_jasa",
             ordering : false,
             paging : false,
             searching : false,
@@ -186,7 +174,7 @@
         });
         tb_t_jasa.destroy();
         tb_t_jasa = $('#tb_t_jasa').DataTable({
-            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_t_jasa/" + idusers,
+            ajax: "<?php echo base_url(); ?>/profilenoadmin/ajaxlist_t_jasa",
             ordering : false,
             paging : false,
             searching : false,
@@ -195,7 +183,6 @@
     }
     
     function save() {
-        var idusers = document.getElementById('idusers').value;
         var nrp = document.getElementById('nrp').value;
         var nama = document.getElementById('nama').value;
         var pangkat = document.getElementById('pangkat').value;
@@ -225,7 +212,6 @@
             $('#btnSave').attr('disabled', true);
 
             var form_data = new FormData();
-            form_data.append('idusers', idusers);
             form_data.append('nrp', nrp);
             form_data.append('nama', nama);
             form_data.append('dinas_pangkat', dinas_pangkat);
@@ -291,7 +277,6 @@
     }
     
     function save_foto(){
-        var idusers = document.getElementById('idusers').value;
         var foto = $('#file_foto').prop('files')[0];
 
         if (idusers === "") {
@@ -301,7 +286,6 @@
             $('#btnSaveFoto').attr('disabled', true);
 
             var form_data = new FormData();
-            form_data.append('idusers', idusers);
             form_data.append('file', foto);
 
             $.ajax({
@@ -331,9 +315,8 @@
     }
     
     function load_foto(){
-        var idusers = document.getElementById('idusers').value;
         $.ajax({
-            url: "<?php echo base_url(); ?>/profilenoadmin/load_foto/" + idusers,
+            url: "<?php echo base_url(); ?>/profilenoadmin/load_foto",
             type: "POST",
             dataType: "JSON",
             success: function (data) {
@@ -354,16 +337,13 @@
     
     function save_pendidikan(){
         var kode = document.getElementById('kode_pend').value;
-        var idusers = document.getElementById('idusers').value;
         var nama = document.getElementById('nm_pend').value;
         var tahun = document.getElementById('tahun_pendidikan').value;
         var ket = document.getElementById('ket_pendidikan').value;
         var file = $('#file_pendidikan').prop('files')[0];
         var mode = document.getElementById('mode_pend').value;
 
-        if (idusers === "") {
-            alert("ID users tidak boleh kosong");
-        }else if(nama === ""){
+        if(nama === ""){
             alert("Nama tidak boleh kosong");
         }else if(tahun === ""){
             alert("Tahun tidak boleh kosong");
@@ -373,7 +353,6 @@
 
             var form_data = new FormData();
             form_data.append('kode', kode);
-            form_data.append('idusers', idusers);
             form_data.append('nama', nama);
             form_data.append('tahun', tahun);
             form_data.append('ket', ket);
@@ -552,15 +531,12 @@
     
     function save_bahasa(){
         var kode = document.getElementById('kode_bahasa').value;
-        var idusers = document.getElementById('idusers').value;
         var nama = document.getElementById('nm_bahasa').value;
         var ket = document.getElementById('ket_bahasa').value;
         var file = $('#file_bahasa').prop('files')[0];
         var mode = document.getElementById('mode_bahasa').value;
 
-        if (idusers === "") {
-            alert("ID users tidak boleh kosong");
-        }else if(nama === ""){
+        if(nama === ""){
             alert("Nama bahasa tidak boleh kosong");
         } else {
             $('#btnSaveBahasa').text('Saving...'); 
@@ -568,7 +544,6 @@
 
             var form_data = new FormData();
             form_data.append('kode', kode);
-            form_data.append('idusers', idusers);
             form_data.append('nama', nama);
             form_data.append('ket', ket);
             form_data.append('file', file);
@@ -618,7 +593,7 @@
         $('#modal_bahasa').modal('show');
         document.getElementById('mode_bahasa').value = "asing";
         $.ajax({
-            url: "<?php echo base_url(); ?>/pengguna/show_b_asing/" + id,
+            url: "<?php echo base_url(); ?>/profilenoadmin/show_b_asing/" + id,
             type: "POST",
             dataType: "JSON",
             success: function (data) {
@@ -697,7 +672,6 @@
     
     function save_pangkat(){
         var kode = document.getElementById('kode_r_pangkat').value;
-        var idusers = document.getElementById('idusers').value;
         var tgl = document.getElementById('tgl_r_pangkat').value;
         var pangkat = document.getElementById('r_pangkat').value;
         var ket = document.getElementById('ket_pangkat').value;
@@ -718,7 +692,6 @@
             }
             
             var form_data = new FormData();
-            form_data.append('idusers', idusers);
             form_data.append('kode', kode);
             form_data.append('tanggal', tgl);
             form_data.append('pangkat', pangkat);
@@ -817,7 +790,6 @@
     
     function save_jabatan(){
         var kode = document.getElementById('idr_jab').value;
-        var idusers = document.getElementById('idusers').value;
         var tgl = document.getElementById('tgl_r_jab').value;
         var jab = document.getElementById('r_jab').value;
         var ket = document.getElementById('ket_jab').value;
@@ -838,7 +810,6 @@
             }
             
             var form_data = new FormData();
-            form_data.append('idusers', idusers);
             form_data.append('kode', kode);
             form_data.append('tanggal', tgl);
             form_data.append('jabatan', jab);
@@ -917,7 +888,6 @@
     
     function save_jasa(){
         var kode = document.getElementById('id_t_jasa').value;
-        var idusers = document.getElementById('idusers').value;
         var jasa = document.getElementById('t_jasa').value;
         var ket = document.getElementById('ket_jasa').value;
 
@@ -935,7 +905,6 @@
             }
             
             var form_data = new FormData();
-            form_data.append('idusers', idusers);
             form_data.append('kode', kode);
             form_data.append('jasa', jasa);
             form_data.append('keterangan', ket);
@@ -984,11 +953,9 @@
     }
 
     function simpan_desc_diri(){
-        var idusers = document.getElementById('idusers').value;
         var ket = tinyMCE.get('ket_deskripsi').getContent();
         
         var form_data = new FormData();
-        form_data.append('idusers', idusers);
         form_data.append('deskripsi', ket);
         
         $.ajax({
@@ -1016,7 +983,6 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">KUTIPAN RIWAYAT HIDUP</h4>
-                    <input type="hidden" name="idusers" id="idusers" value="<?php echo $idusers; ?>">
                     <hr>
                     <nav>
                         <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">

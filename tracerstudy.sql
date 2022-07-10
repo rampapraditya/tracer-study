@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Jul 06, 2022 at 02:52 PM
+-- Generation Time: Jul 10, 2022 at 11:43 AM
 -- Server version: 5.7.31
 -- PHP Version: 7.3.21
 
@@ -76,6 +76,13 @@ CREATE TABLE IF NOT EXISTS `deskripsi_diri` (
   PRIMARY KEY (`iddeskripsi`),
   KEY `FK_deskripsi_diri_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `deskripsi_diri`
+--
+
+INSERT INTO `deskripsi_diri` (`iddeskripsi`, `idusers`, `deskripsi`) VALUES
+('D00001', 'U00002', '<p>Deskripsi singkat tentang atika rampa</p>');
 
 -- --------------------------------------------------------
 
@@ -322,17 +329,9 @@ CREATE TABLE IF NOT EXISTS `tanda_jasa` (
   `idusers` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
   `tanda_jasa` varchar(45) NOT NULL,
   `keterangan` varchar(150) DEFAULT NULL,
-  `file` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`idtjasa`),
   KEY `FK_tanda_jasa_users` (`idusers`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `tanda_jasa`
---
-
-INSERT INTO `tanda_jasa` (`idtjasa`, `idusers`, `tanda_jasa`, `keterangan`, `file`) VALUES
-('B00001', 'U00002', 'Bahasa Inggris', '-', 'U00002/1657033826_6cbc87e304d2329bc0ca.jpg');
 
 -- --------------------------------------------------------
 
@@ -360,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`idusers`, `nrp`, `pass`, `nama`, `idrole`, `idkorps`, `idpangkat`, `foto`) VALUES
 ('U00001', 'ADMIN', 'aGtq', 'ADMIN', 'R00001', 'K00000', 'P00001', 'U00001/foto.jpeg'),
-('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013', 'U00002/1657030058_2ee0b012df01f93cc74c.jpg');
+('U00002', '111', 'aGtq', 'Rampa atika', 'R00002', 'K00001', 'P00013', 'U00002/1657446208_779fd4eb0b7fd3898840.png');
 
 -- --------------------------------------------------------
 
@@ -394,7 +393,8 @@ CREATE TABLE IF NOT EXISTS `users_detil` (
 
 INSERT INTO `users_detil` (`idusers_detil`, `idusers`, `ms_dinas_pngkt`, `tmt_tni`, `ms_dinas_prajurit`, `tmp_lahir`, `tgl_lahir`, `suku`, `jabatan`, `lama_jabatan`, `alamat`, `tmt_fiktif`, `jkel`, `agama`) VALUES
 ('D00001', 'U00002', '-', '2022-05-20', '-', 'Surabaya', '1989-08-02', 'Jawa', '-', '-', 'Gunung Anyar', '-', 'L', 'Islam'),
-('D00002', 'U00001', NULL, NULL, NULL, NULL, '1991-08-02', NULL, NULL, NULL, NULL, NULL, NULL, 'Islam');
+('D00002', 'U00001', NULL, NULL, NULL, NULL, '1991-08-02', NULL, NULL, NULL, NULL, NULL, NULL, 'Islam'),
+('D00003', 'U00002', '-', '2022-05-20', '-', 'Surabaya', '1989-08-02', 'Jawa', '-', '-', 'Gunung Anyar', '-', 'L', 'Islam');
 
 --
 -- Constraints for dumped tables

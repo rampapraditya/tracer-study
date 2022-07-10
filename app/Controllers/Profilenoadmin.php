@@ -130,9 +130,10 @@ class Profilenoadmin extends BaseController {
     }
 
     private function simpan() {
+        $idusers = session()->get("username");
         $data = array(
             'idusers_detil' => $this->model->autokode("D", "idusers_detil", "users_detil", 2, 7),
-            'idusers' => $this->request->getVar('idusers'),
+            'idusers' => $idusers,
             'ms_dinas_pngkt' => $this->request->getVar('dinas_pangkat'),
             'tmt_tni' => $this->request->getVar('tmt_tni'),
             'ms_dinas_prajurit' => $this->request->getVar('dinas_tni'),
@@ -156,6 +157,7 @@ class Profilenoadmin extends BaseController {
     }
 
     private function update() {
+        $idusers = session()->get("username");
         $data = array(
             'ms_dinas_pngkt' => $this->request->getVar('dinas_pangkat'),
             'tmt_tni' => $this->request->getVar('tmt_tni'),
@@ -170,7 +172,7 @@ class Profilenoadmin extends BaseController {
             'agama' => $this->request->getVar('agama'),
             'jkel' => $this->request->getVar('jkel'),
         );
-        $kond['idusers'] = $this->request->getVar('idusers');
+        $kond['idusers'] = $idusers;
         $update = $this->model->update("users_detil", $data, $kond);
         if ($update == 1) {
             $status = "Data terupdate";
@@ -182,7 +184,7 @@ class Profilenoadmin extends BaseController {
 
     public function prose_upload_foto() {
         if (session()->get("logged_no_admin")) {
-            $idusers = $this->request->getVar('idusers');
+            $idusers = session()->get("username");
             
             // membuat folder berdasarkan idusers
             if($this->modul->folder_exist($this->modul->getPathApp().$idusers)){
@@ -228,7 +230,8 @@ class Profilenoadmin extends BaseController {
     
     public function load_foto() {
         if (session()->get("logged_no_admin")) {
-            $idusers = $this->request->uri->getSegment(3);
+            $idusers = session()->get("username");
+            
             $def_foto = base_url().'/images/noimg.jpg';
             $foto = $this->model->getAllQR("select foto from users where idusers = '".$idusers."';")->foto;           
             if (strlen($foto) > 0) {
@@ -244,7 +247,7 @@ class Profilenoadmin extends BaseController {
     
     public function ajaxlist_p_umum() {
         if(session()->get("logged_no_admin")){
-            $idusers = $this->request->uri->getSegment(3);
+            $idusers = session()->get("username");
             // load data
             $data = array();
             $no = 1;
@@ -271,5 +274,1175 @@ class Profilenoadmin extends BaseController {
         }
     }
     
+    public function ajax_add_pend_umum() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_pend_umum_file();
+                }
+            }else{
+                $status = $this->simpan_pend_umum();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
     
+    private function simpan_pend_umum_file() {
+        $idusers = session()->get("username");
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
+            if($status_upload){
+                $data = array(
+                    'idpendidikan' => $this->model->autokode("U","idpendidikan","pend_umum", 2, 7),
+                    'idusers' => $idusers,
+                    'nm_pendidikan' => $this->request->getVar('nama'),
+                    'tahun' => $this->request->getVar('tahun'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$namaFile
+                );
+                $simpan = $this->model->add("pend_umum",$data);
+                if($simpan == 1){
+                    $status = "Data tersimpan";
+                }else{
+                    $status = "Data gagal tersimpan";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function simpan_pend_umum() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idpendidikan' => $this->model->autokode("U","idpendidikan","pend_umum", 2, 7),
+            'idusers' => $idusers,
+            'nm_pendidikan' => $this->request->getVar('nama'),
+            'tahun' => $this->request->getVar('tahun'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("pend_umum", $data);
+        if ($simpan == 1) {
+            $status = "Data tersimpan";
+        } else {
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function show_pend_umum() {
+        if(session()->get("logged_no_admin")){
+            $kond['idpendidikan'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("pend_umum", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function show_pend_militer() {
+        if(session()->get("logged_no_admin")){
+            $kond['idpendidikan'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("pend_militer", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_pend_umum() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->update_pend_umum_file();
+                }
+            }else{
+                $status = $this->update_pend_umum();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function update_pend_umum_file() {
+        $idusers = session()->get("username");
+        $nm_folder = $this->request->getVar('idusers');
+        // hapus file lama
+        $lawas = $this->model->getAllQR("SELECT file FROM pend_umum where idpendidikan = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas)){
+                unlink($this->modul->getPathApp().$lawas);
+            }
+        }
+        
+        $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
+            if($status_upload){
+                $data = array(
+                    'idusers' => $idusers,
+                    'nm_pendidikan' => $this->request->getVar('nama'),
+                    'tahun' => $this->request->getVar('tahun'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$fileName
+                );
+                $kond['idpendidikan'] = $this->request->getVar('kode');
+                $update = $this->model->update("pend_umum",$data, $kond);
+                if($update == 1){
+                    $status = "Data terupdate";
+                }else{
+                    $status = "Data gagal terupdate";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function update_pend_umum() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idusers' => $idusers,
+            'nm_pendidikan' => $this->request->getVar('nama'),
+            'tahun' => $this->request->getVar('tahun'),
+            'keterangan' => $this->request->getVar('ket')
+        );
+        $kond['idpendidikan'] = $this->request->getVar('kode');
+        $update = $this->model->update("pend_umum", $data, $kond);
+        if ($update == 1) {
+            $status = "Data terupdate";
+        } else {
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function hapuspendumum() {
+        if(session()->get("logged_no_admin")){
+            $idpendidikan = $this->request->uri->getSegment(3);
+            // cek file
+            $lawas = $this->model->getAllQR("SELECT file FROM pend_umum where idpendidikan = '".$idpendidikan."';");
+            if(strlen($lawas->file) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas->file)){
+                    unlink($this->modul->getPathApp().$lawas->file);
+                }
+            }
+            
+            
+            $kond['idpendidikan'] = $idpendidikan;
+            $hapus = $this->model->delete("pend_umum",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_p_militer() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("select * from pend_militer where idusers = '".$idusers."';");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nm_pendidikan;
+                $val[] = $row->tahun;
+                $val[] = '<img src="'.base_url().'/'.$this->modul->getPathApp().$row->file.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idpendidikan."'".','."'militer'".')">';
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_pend_militer('."'".$row->idpendidikan."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_pend_militer('."'".$row->idpendidikan."'".','."'".$row->nm_pendidikan."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function load_detil_img() {
+        if (session()->get("logged_no_admin")) {
+            $kode = $this->request->uri->getSegment(3);
+            $mode = $this->request->uri->getSegment(4);
+            $def_foto = base_url().'/images/noimg.jpg';
+            if($mode == "umum"){
+                $foto = $this->model->getAllQR("select file from pend_umum where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "militer"){
+                $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "basing"){
+                $foto = $this->model->getAllQR("select file from b_asing where idb_asing = '".$kode."';")->file;
+            }else if($mode == "bdaerah"){
+                $foto = $this->model->getAllQR("select file from b_daerah where idb_daerah = '".$kode."';")->file;
+            }
+            
+            if (strlen($foto) > 0) {
+                if (file_exists($this->modul->getPathApp().$foto)) {
+                    $def_foto = base_url().'/uploads/'.$foto;
+                }
+            }
+            echo json_encode(array("foto" => $def_foto));
+        } else {
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function unduhfile() {
+        if (session()->get("logged_no_admin")) {
+            $kode = $this->request->uri->getSegment(3);
+            $mode = $this->request->uri->getSegment(4);
+            if($mode == "umum"){
+                $foto = $this->model->getAllQR("select file from pend_umum where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "militer"){
+                $foto = $this->model->getAllQR("select file from pend_militer where idpendidikan = '".$kode."';")->file;
+            }else if($mode == "basing"){
+                $foto = $this->model->getAllQR("select file from b_asing where idb_asing = '".$kode."';")->file;
+            }else if($mode == "bdaerah"){
+                $foto = $this->model->getAllQR("select file from b_daerah where idb_daerah = '".$kode."';")->file;
+            }
+            return $this->response->download('uploads/' . $foto, null);
+        }else {
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_pend_militer() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_pend_militer_file();
+                }
+            }else{
+                $status = $this->simpan_pend_militer();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_pend_militer_file() {
+        $idusers = session()->get("username");
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
+            if($status_upload){
+                $data = array(
+                    'idpendidikan' => $this->model->autokode("M","idpendidikan","pend_militer", 2, 7),
+                    'idusers' => $idusers,
+                    'nm_pendidikan' => $this->request->getVar('nama'),
+                    'tahun' => $this->request->getVar('tahun'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$namaFile
+                );
+                $simpan = $this->model->add("pend_militer",$data);
+                if($simpan == 1){
+                    $status = "Data tersimpan";
+                }else{
+                    $status = "Data gagal tersimpan";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function simpan_pend_militer() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idpendidikan' => $this->model->autokode("M","idpendidikan","pend_militer", 2, 7),
+            'idusers' => $idusers,
+            'nm_pendidikan' => $this->request->getVar('nama'),
+            'tahun' => $this->request->getVar('tahun'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("pend_militer", $data);
+        if ($simpan == 1) {
+            $status = "Data tersimpan";
+        } else {
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function ajax_edit_pend_militer() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->update_pend_militer_file();
+                }
+            }else{
+                $status = $this->update_pend_militer();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function update_pend_militer_file() {
+        // hapus file lama
+        $lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas->file) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas->file)){
+                unlink($this->modul->getPathApp().$lawas->file);
+            }
+        }
+        
+        $idusers = session()->get("username");
+        $nm_folder = $this->request->getVar('idusers');
+        $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
+            if($status_upload){
+                $data = array(
+                    'idusers' => $idusers,
+                    'nm_pendidikan' => $this->request->getVar('nama'),
+                    'tahun' => $this->request->getVar('tahun'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$fileName
+                );
+                $kond['idpendidikan'] = $this->request->getVar('kode');
+                $update = $this->model->update("pend_militer",$data, $kond);
+                if($update == 1){
+                    $status = "Data terupdate";
+                }else{
+                    $status = "Data gagal terupdate";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function update_pend_militer() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idusers' => $idusers,
+            'nm_pendidikan' => $this->request->getVar('nama'),
+            'tahun' => $this->request->getVar('tahun'),
+            'keterangan' => $this->request->getVar('ket')
+        );
+        $kond['idpendidikan'] = $this->request->getVar('kode');
+        $update = $this->model->update("pend_militer", $data, $kond);
+        if ($update == 1) {
+            $status = "Data terupdate";
+        } else {
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function hapuspendmiliter() {
+        if(session()->get("logged_no_admin")){
+            $idpendidikan = $this->request->uri->getSegment(3);
+            // cek file
+            $lawas = $this->model->getAllQR("SELECT file FROM pend_militer where idpendidikan = '".$idpendidikan."';")->file;
+            if(strlen($lawas) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas)){
+                    unlink($this->modul->getPathApp().$lawas);
+                }
+            }
+            
+            $kond['idpendidikan'] = $idpendidikan;
+            $hapus = $this->model->delete("pend_militer",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_b_asing() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("select * from b_asing where idusers = '".$idusers."';");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nm_bahasa;
+                $val[] = $row->keterangan;
+                $path = base_url().'/images/noimg.jpg';
+                if(strlen($row->file) > 0){
+                    if(file_exists($this->modul->getPathApp().$row->file)){
+                        $path = base_url().'/'.$this->modul->getPathApp().$row->file;
+                    }
+                }
+                $val[] = '<img src="'.$path.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idb_asing."'".','."'basing'".')">';
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_b_asing('."'".$row->idb_asing."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_b_asing('."'".$row->idb_asing."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_b_daerah() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("select * from b_daerah where idusers = '".$idusers."';");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->nm_bahasa;
+                $val[] = $row->keterangan;
+                $path = base_url().'/images/noimg/jpg';
+                if(strlen($row->file) > 0){
+                    if(file_exists($this->modul->getPathApp().$row->file)){
+                        $path = base_url().'/'.$this->modul->getPathApp().$row->file;
+                    }
+                }
+                $val[] = '<img src="'.$path.'" style="cursor: pointer; width: 100px; height: auto;" class="img-thumbnail" onclick="showimg('."'".$row->idb_daerah."'".','."'bdaerah'".')">';
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_b_daerah('."'".$row->idb_daerah."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_b_daerah('."'".$row->idb_daerah."'".','."'".$row->nm_bahasa."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_b_asing() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_b_asing_file();
+                }
+            }else{
+                $status = $this->simpan_b_asing();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_b_asing_file() {
+        $idusers = session()->get("username");
+        $nm_folder = session()->get("username");
+        $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
+            if($status_upload){
+                $data = array(
+                    'idb_asing' => $this->model->autokode("B","idb_asing","b_asing", 2, 7),
+                    'idusers' => $idusers,
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$namaFile
+                );
+                $simpan = $this->model->add("b_asing",$data);
+                if($simpan == 1){
+                    $status = "Data tersimpan";
+                }else{
+                    $status = "Data gagal tersimpan";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function simpan_b_asing() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idb_asing' => $this->model->autokode("B","idb_asing","b_asing", 2, 7),
+            'idusers' => $idusers,
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("b_asing",$data);
+        if($simpan == 1){
+            $status = "Data tersimpan";
+        }else{
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function show_b_asing() {
+        if(session()->get("logged_no_admin")){
+            $kondisi['idb_asing'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("b_asing", $kondisi);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_b_asing() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->update_b_asing_file();
+                }
+            }else{
+                $status = $this->update_b_asing();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function update_b_asing_file() {
+        // hapus file lama
+        $lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas)){
+                unlink($this->modul->getPathApp().$lawas);
+            }
+        }
+        
+        $idusers = session()->get("username");
+        $nm_folder = $idusers;
+        $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
+            if($status_upload){
+                $data = array(
+                    'idusers' => $idusers,
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$fileName
+                );
+                $kond['idb_asing'] = $this->request->getVar('kode');
+                $update = $this->model->update("b_asing",$data, $kond);
+                if($update == 1){
+                    $status = "Data terupdate";
+                }else{
+                    $status = "Data gagal terupdate";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function update_b_asing() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idusers' => $idusers,
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket')
+        );
+        $kond['idb_asing'] = $this->request->getVar('kode');
+        $update = $this->model->update("b_asing", $data, $kond);
+        if ($update == 1) {
+            $status = "Data terupdate";
+        } else {
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function hapus_b_asing() {
+        if(session()->get("logged_no_admin")){
+            $kode = $this->request->uri->getSegment(3);
+            // cek file
+            $lawas = $this->model->getAllQR("SELECT file FROM b_asing where idb_asing = '".$kode."';")->file;
+            if(strlen($lawas) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas)){
+                    unlink($this->modul->getPathApp().$lawas);
+                }
+            }
+            
+            $kond['idb_asing'] = $kode;
+            $hapus = $this->model->delete("b_asing",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_b_daerah() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->simpan_b_daerah_file();
+                }
+            }else{
+                $status = $this->simpan_b_daerah();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function simpan_b_daerah_file() {
+        $idusers = session()->get("username");
+        $nm_folder = $idusers;
+        $file = $this->request->getFile('file');
+        $namaFile = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$namaFile)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $namaFile);
+            if($status_upload){
+                $data = array(
+                    'idb_daerah' => $this->model->autokode("B","idb_daerah","b_daerah", 2, 7),
+                    'idusers' => $idusers,
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$namaFile
+                );
+                $simpan = $this->model->add("b_daerah",$data);
+                if($simpan == 1){
+                    $status = "Data tersimpan";
+                }else{
+                    $status = "Data gagal tersimpan";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function simpan_b_daerah() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idb_daerah' => $this->model->autokode("B","idb_daerah","b_daerah", 2, 7),
+            'idusers' => $idusers,
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket'),
+            'file' => ''
+        );
+        $simpan = $this->model->add("b_daerah",$data);
+        if($simpan == 1){
+            $status = "Data tersimpan";
+        }else{
+            $status = "Data gagal tersimpan";
+        }
+        return $status;
+    }
+    
+    public function show_b_daerah() {
+        if(session()->get("logged_no_admin")){
+            $kond['idb_daerah'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("b_daerah", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_b_daerah() {
+        if(session()->get("logged_no_admin")){
+            if (isset($_FILES['file']['name'])) {
+                if(0 < $_FILES['file']['error']) {
+                    $status = "Error during file upload ".$_FILES['file']['error'];
+                }else{
+                    $status = $this->update_b_daerah_file();
+                }
+            }else{
+                $status = $this->update_b_daerah();
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    private function update_b_daerah_file() {
+        // hapus file lama
+        $lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$this->request->getVar('kode')."';")->file;
+        if(strlen($lawas) > 0){
+            if(file_exists($this->modul->getPathApp().$lawas)){
+                unlink($this->modul->getPathApp().$lawas);
+            }
+        }
+        
+        $idusers = session()->get("username");
+        $nm_folder = $idusers;
+        $file = $this->request->getFile('file');
+        $fileName = $file->getRandomName();
+        $info_file = $this->modul->info_file($file);
+        
+        if(file_exists($this->modul->getPathApp().$nm_folder.'/'.$fileName)){
+            $status = "Gunakan nama file lain";
+        }else{
+            $status_upload = $file->move($this->modul->getPathApp().$nm_folder, $fileName);
+            if($status_upload){
+                $data = array(
+                    'idusers' => $idusers,
+                    'nm_bahasa' => $this->request->getVar('nama'),
+                    'keterangan' => $this->request->getVar('ket'),
+                    'file' => $nm_folder.'/'.$fileName
+                );
+                $kond['idb_daerah'] = $this->request->getVar('kode');
+                $update = $this->model->update("b_daerah",$data, $kond);
+                if($update == 1){
+                    $status = "Data terupdate";
+                }else{
+                    $status = "Data gagal terupdate";
+                }
+            }else{
+                $status = "File gagal terupload";
+            }
+        }
+        return $status;
+    }
+    
+    private function update_b_daerah() {
+        $idusers = session()->get("username");
+        $data = array(
+            'idusers' => $idusers,
+            'nm_bahasa' => $this->request->getVar('nama'),
+            'keterangan' => $this->request->getVar('ket')
+        );
+        $kond['idb_daerah'] = $this->request->getVar('kode');
+        $update = $this->model->update("b_daerah", $data, $kond);
+        if ($update == 1) {
+            $status = "Data terupdate";
+        } else {
+            $status = "Data gagal terupdate";
+        }
+        return $status;
+    }
+    
+    public function hapus_b_daerah() {
+        if(session()->get("logged_no_admin")){
+            $kode = $this->request->uri->getSegment(3);
+            // cek file
+            $lawas = $this->model->getAllQR("SELECT file FROM b_daerah where idb_daerah = '".$kode."';")->file;
+            if(strlen($lawas) > 0){
+                if(file_exists($this->modul->getPathApp().$lawas)){
+                    unlink($this->modul->getPathApp().$lawas);
+                }
+            }
+            
+            $kond['idb_daerah'] = $kode;
+            $hapus = $this->model->delete("b_daerah",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_r_pangkat() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("select idriwayat_pangkat, date_format(tanggal, '%d %M %Y') as tgl, b.nama_pangkat, a.keterangan from riwayat_pangkat a, pangkat b where a.idusers = '".$idusers."' and a.idpangkat = b.idpangkat;");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->tgl;
+                $val[] = $row->nama_pangkat;
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_r_pangkat('."'".$row->idriwayat_pangkat."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_r_pangkat('."'".$row->idriwayat_pangkat."'".','."'".$row->nama_pangkat."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_r_pangkat() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            $data = array(
+                'idriwayat_pangkat' => $this->model->autokode("R","idriwayat_pangkat","riwayat_pangkat", 2, 7),
+                'idusers' => $idusers,
+                'tanggal' => $this->request->getVar('tanggal'),
+                'idpangkat' => $this->request->getVar('pangkat'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $simpan = $this->model->add("riwayat_pangkat",$data);
+            if($simpan == 1){
+                $status = "Data tersimpan";
+            }else{
+                $status = "Data gagal tersimpan";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function show_r_pangkat() {
+        if(session()->get("logged_no_admin")){
+            $kondisi['idriwayat_pangkat'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("riwayat_pangkat", $kondisi);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_r_pangkat() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            $data = array(
+                'idusers' => $idusers,
+                'tanggal' => $this->request->getVar('tanggal'),
+                'idpangkat' => $this->request->getVar('pangkat'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $kond['idriwayat_pangkat'] = $this->request->getVar('kode');
+            $update = $this->model->update("riwayat_pangkat",$data, $kond);
+            if($update == 1){
+                $status = "Data terupdate";
+            }else{
+                $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function hapus_r_pangkat() {
+        if(session()->get("logged_no_admin")){
+            $kondisi['idriwayat_pangkat'] = $this->request->uri->getSegment(3);
+            $hapus = $this->model->delete("riwayat_pangkat",$kondisi);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajaxlist_r_jabatan() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("SELECT idr_jab, date_format(tanggal, '%d %M %Y') as tgl, jabatan, keterangan  FROM riwayat_jabatan where idusers = '".$idusers."';");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->tgl;
+                $val[] = $row->jabatan;
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_r_jab('."'".$row->idr_jab."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_r_jab('."'".$row->idr_jab."'".','."'".$row->jabatan."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_r_jab() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            $data = array(
+                'idr_jab' => $this->model->autokode("R","idr_jab","riwayat_jabatan", 2, 7),
+                'idusers' => $idusers,
+                'tanggal' => $this->request->getVar('tanggal'),
+                'jabatan' => $this->request->getVar('jabatan'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $simpan = $this->model->add("riwayat_jabatan",$data);
+            if($simpan == 1){
+                $status = "Data tersimpan";
+            }else{
+                $status = "Data gagal tersimpan";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function show_r_jab() {
+        if(session()->get("logged_no_admin")){
+            $kond['idr_jab'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("riwayat_jabatan", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_r_jab() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            $data = array(
+                'idusers' => $idusers,
+                'tanggal' => $this->request->getVar('tanggal'),
+                'jabatan' => $this->request->getVar('jabatan'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $kond['idr_jab'] = $this->request->getVar('kode');
+            $update = $this->model->update("riwayat_jabatan",$data, $kond);
+            if($update == 1){
+                $status = "Data terupdate";
+            }else{
+                $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function hapus_r_jabatan() {
+        if(session()->get("logged_no_admin")){
+            $kondisi['idr_jab'] = $this->request->uri->getSegment(3);
+            $hapus = $this->model->delete("riwayat_jabatan",$kondisi);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    public function ajaxlist_t_jasa() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            // load data
+            $data = array();
+            $no = 1;
+            $list = $this->model->getAllQ("SELECT idtjasa, tanda_jasa, keterangan FROM tanda_jasa where idusers = '".$idusers."';");
+            foreach ($list->getResult() as $row) {
+                $val = array();
+                $val[] = $no;
+                $val[] = $row->tanda_jasa;
+                $val[] = $row->keterangan;
+                $val[] = '<div style="text-align: center;">'
+                        . '<button type="button" class="btn btn-outline-primary btn-fw" onclick="show_jasa('."'".$row->idtjasa."'".')">Ganti</button>&nbsp;'
+                        . '<button type="button" class="btn btn-outline-danger btn-fw" onclick="hapus_jasa('."'".$row->idtjasa."'".','."'".$row->tanda_jasa."'".')">Hapus</button>'
+                        . '</div>';
+                $data[] = $val;
+                
+                $no++;
+            }
+            $output = array("data" => $data);
+            echo json_encode($output);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function show_jasa() {
+        if(session()->get("logged_no_admin")){
+            $kond['idtjasa'] = $this->request->uri->getSegment(3);
+            $data = $this->model->get_by_id("tanda_jasa", $kond);
+            echo json_encode($data);
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_add_jasa() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            $data = array(
+                'idtjasa' => $this->model->autokode("J","idtjasa","tanda_jasa", 2, 7),
+                'idusers' => $idusers,
+                'tanda_jasa' => $this->request->getVar('jasa'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $simpan = $this->model->add("tanda_jasa",$data);
+            if($simpan == 1){
+                $status = "Data tersimpan";
+            }else{
+                $status = "Data gagal tersimpan";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+    
+    public function ajax_edit_jasa() {
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            $data = array(
+                'idusers' => $idusers,
+                'tanda_jasa' => $this->request->getVar('jasa'),
+                'keterangan' => $this->request->getVar('keterangan')
+            );
+            $kond['idtjasa'] = $this->request->getVar('kode');
+            $update = $this->model->update("tanda_jasa",$data, $kond);
+            if($update == 1){
+                $status = "Data terupdate";
+            }else{
+                $status = "Data gagal terupdate";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+
+    public function hapus_jasa() {
+        if(session()->get("logged_no_admin")){
+            $kond['idtjasa'] = $this->request->uri->getSegment(3);
+            $hapus = $this->model->delete("tanda_jasa",$kond);
+            if($hapus == 1){
+                $status = "Data terhapus";
+            }else{
+                $status = "Data gagal terhapus";
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
+
+    public function proses_deskripsi(){
+        if(session()->get("logged_no_admin")){
+            $idusers = session()->get("username");
+            $jml = $this->model->getAllQR("SELECT count(*) as jml FROM deskripsi_diri where idusers = '".$idusers."';")->jml;
+            if($jml > 0){
+                $data = array(
+                    'deskripsi' => $this->request->getVar('deskripsi')
+                );
+                $kond['idusers'] = $idusers;
+                $update = $this->model->update("deskripsi_diri",$data, $kond);
+                if($update == 1){
+                    $status = "Deskripsi terupdate";
+                }else{
+                    $status = "Deskripsi gagal terupdate";
+                }
+            }else{
+                $data = array(
+                    'iddeskripsi' => $this->model->autokode("D","iddeskripsi","deskripsi_diri", 2, 7),
+                    'idusers' => $idusers,
+                    'deskripsi' => $this->request->getVar('deskripsi')
+                );
+                $simpan = $this->model->add("deskripsi_diri",$data);
+                if($simpan == 1){
+                    $status = "Deskripsi tersimpan";
+                }else{
+                    $status = "Deskripsi gagal tersimpan";
+                }
+            }
+            echo json_encode(array("status" => $status));
+        }else{
+            $this->modul->halaman('login');
+        }
+    }
 }

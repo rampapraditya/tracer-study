@@ -21,21 +21,27 @@ class Login extends BaseController {
     }
     
     public function index(){
-        $deflogo = base_url().'/images/noimg.jpg';
-        $jml_identitas = $this->model->getAllQR("SELECT count(*) as jml FROM identitas;")->jml;
-        if($jml_identitas > 0){
-            $tersimpan = $this->model->getAllQR("SELECT * FROM identitas;");
-            if(strlen($tersimpan->logo) > 0){
-                if(file_exists(ROOTPATH.'public/uploads/'.$tersimpan->logo)){
-                    $deflogo = base_url().'/uploads/'.$tersimpan->logo;
-                }
-            }
-            $data['logo'] = $deflogo;
+        if(session()->get("logged_in")){
+            $this->modul->halaman('home');
+        }else if(session()->get("logged_no_admin")){
+            $this->modul->halaman('homenoadmin');
         }else{
-            $data['logo'] = $deflogo;
+            $deflogo = base_url().'/images/noimg.jpg';
+            $jml = $this->model->getAllQR("SELECT count(*) as jml FROM identitas;")->jml;
+            if($jml > 0){
+                $tersimpan = $this->model->getAllQR("SELECT * FROM identitas;");
+                if(strlen($tersimpan->logo) > 0){
+                    if(file_exists(ROOTPATH.'public/uploads/'.$tersimpan->logo)){
+                        $deflogo = base_url().'/uploads/'.$tersimpan->logo;
+                    }
+                }
+                $data['logo'] = $deflogo;
+            }else{
+                $data['logo'] = $deflogo;
+            }
+
+            echo view('login', $data);
         }
-                
-        echo view('login', $data);
     }
     
     public function proses() {
