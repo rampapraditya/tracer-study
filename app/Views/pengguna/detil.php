@@ -516,7 +516,6 @@
     
     function hapus_pend_militer(id, nama){
         if (confirm("Apakah anda yakin menghapus pendidikan militer " + nama + " ?")) {
-            alert("<?php echo base_url(); ?>/pengguna/hapuspendmiliter/" + id);
             $.ajax({
                 url: "<?php echo base_url(); ?>/pengguna/hapuspendmiliter/" + id,
                 type: "POST",
